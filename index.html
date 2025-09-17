@@ -2794,7 +2794,7 @@
     border-radius: 12px;
     padding: 15px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border-left: 5px solid #ff6b6b; /* 左侧用醒目的红色条 */
+    border-left: 5px solid #; /* 左侧用醒目的红色条 */
     display: flex;
     flex-direction: column;
     gap: 12px; /* 元素之间的间距 */
@@ -18662,136 +18662,119 @@
             
             // 4. 启动所有倒计时
             startAllCountdownTimers();
-        }
+        } // <--- 这是 renderMemoriesScreen 函数的“大门”（结束括号）
         // ▲▲▲ 替换结束 ▲▲▲
-          // ⬇️ ⬇️ ⬇️ 添加开始 ⬇️ ⬇️ ⬇️
-        // 你好！我们需要新增一个辅助函数，用来控制新版回忆录的“展开”和“收起”
-        function toggleMemoryView(buttonOrTitleEl) {
-            // 1. 找到我们点击的按钮或标题所在的整个卡片
-            const card = buttonOrTitleEl.closest('.memory-card');
-            if (!card) return;
+    
+// ⬇️ ⬇️ ⬇️ 粘贴到这里 ⬇️ ⬇️ ⬇️
+// 【【【看这里！！！】】】
+// 你之前把新函数加到上面那个 } 的“里面”去了！
+// 你必须把它剪切出来，粘贴到这个 } 的“下面”，就像我现在这样：
+
+window.toggleMemoryView = function(buttonOrTitleEl) {
+    const card = buttonOrTitleEl.closest('.memory-card');
+    if (!card) return;
+
+    // 在卡片里找到对应的零件
+    const preview = card.querySelector('.memory-preview');
+    const fullContent = card.querySelector('.memory-full-content');
+    const toggleBtn = card.querySelector('.memory-toggle-btn');
+
+    // 【【【这就是安全检查！】】】
+    // 如果这张卡片不是AI回忆卡（比如它是约定卡），它就没有这三个零件，我们就直接退出。
+    if (!preview || !fullContent || !toggleBtn) {
+        console.log("这是一个没有展开功能的卡片（比如约定卡），操作已跳过。");
+        return; // 关键：在这里退出
+    }
+
+    // 只有三个零件都齐全的卡片，才能执行下面的展开/收起
+    if (fullContent.style.display === 'none' || fullContent.style.display === '') {
+        fullContent.style.display = 'block';
+        preview.style.display = 'none'; 
+        toggleBtn.textContent = '收起';
+    } else {
+        fullContent.style.display = 'none';
+        preview.style.display = 'block';
+        toggleBtn.textContent = '展开阅读全文';
+    }
+}
+                  
+     
+function createMemoryCard(memory) {
+    
+    // 1. 处理“约定达成”的卡片 (这个功能我们必须保留)
+    if (memory.type === 'countdown' && memory.targetDate) {
+        const card = document.createElement('div');
+        card.className = 'memory-card'; // 套用新CSS的边框和背景
+        const memoryDate = new Date(memory.timestamp);
+        const dateString = `${memoryDate.getFullYear()}-${String(memoryDate.getMonth() + 1).padStart(2, '0')}-${String(memoryDate.getDate()).padStart(2, '0')}`;
         
-            // 2. 在卡片里找到对应的元素
-            const preview = card.querySelector('.memory-preview');
-            const fullContent = card.querySelector('.memory-full-content');
-            const toggleBtn = card.querySelector('.memory-toggle-btn');
+        const titleHtml = `[约定达成] ${memory.description}`;
+        const contentHtml = parseMarkdown(`在 ${new Date(memory.targetDate).toLocaleString()}，我们一起见证了这个约定。`).replace(/\n/g, '<br>');
         
-            // 3. 检查当前是展开还是收起
-            if (fullContent.style.display === 'none' || fullContent.style.display === '') {
-                // 如果是隐藏的 -> 展开它
-                fullContent.style.display = 'block';
-                preview.style.display = 'none'; // 隐藏预览
-                toggleBtn.textContent = '收起';
-            } else {
-                // 如果是展开的 -> 收起它
-                fullContent.style.display = 'none';
-                preview.style.display = 'block'; // 恢复显示预览
-                toggleBtn.textContent = '展开阅读全文';
+        // 注意：这张卡片没有 onclick 事件，所以它不会调用 toggleMemoryView，很安全！
+        card.innerHTML = `
+            <div class="memory-title" style="color: var(--accent-color);">${titleHtml}</div>
+            <div class="memory-preview">${contentHtml}</div>
+            <div class="memory-signature" style="margin-top: 5px;">${dateString}</div>
+        `;
+        addLongPressListener(card, async () => {
+            const confirmed = await showCustomConfirm('删除记录', '删除这条记录吗？', { confirmButtonClass: 'btn-danger' });
+            if (confirmed) {
+                await db.memories.delete(memory.id);
+                renderMemoriesScreen();
             }
+        });
+        return card;
+    }
+
+    // 2. 处理你想要的“AI生成回忆”卡片 (ai_generated)
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+
+    const memoryDate = new Date(memory.timestamp);
+    const dateString = `${memoryDate.getFullYear()}年${memoryDate.getMonth() + 1}月${memoryDate.getDate()}日`;
+    
+    let authorDisplayName = '一位朋友';
+    if (memory.authorId) {
+        const authorChat = state.chats[memory.authorId];
+        if (authorChat) authorDisplayName = authorChat.name;
+        else authorDisplayName = memory.authorName || '一位朋友'; 
+    } else if (memory.authorName) authorDisplayName = memory.authorName; 
+
+    const fullText = memory.description || '(AI偷懒了，没有写正文内容...)';
+    const previewText = fullText.replace(/\n/g, ' ').substring(0, 50) + '...';
+    
+    // 这张卡片的所有可点击元素，都会调用 window.toggleMemoryView
+    card.innerHTML = `
+        <div class="memory-title" onclick="toggleMemoryView(this)">
+            ${memory.title || '震惊！AI忘记写标题了！'}
+        </div>
+        <div class="memory-preview" onclick="toggleMemoryView(this)">
+            ${previewText}
+        </div>
+        <div class="memory-full-content">
+            <pre class="memory-body-text">${fullText}</pre>
+            <div class="memory-spicy-review">
+                <strong></strong> ${memory.spicyReview || '（AI这次词穷了。）'}
+            </div>
+            <div class="memory-signature">
+                ${authorDisplayName}<br>
+                ${dateString}
+            </div>
+        </div>
+        <button class="memory-toggle-btn" onclick="toggleMemoryView(this)">展开阅读全文</button>
+    `;
+
+    addLongPressListener(card, async () => {
+        const confirmed = await showCustomConfirm('删除记录', '删除这条回忆吗？', { confirmButtonClass: 'btn-danger' });
+        if (confirmed) {
+            await db.memories.delete(memory.id);
+            renderMemoriesScreen();
         }
-        // ⬆️ ⬆️ ⬆️ 添加结束 ⬆️ ⬆️ ⬆️
-        /**
-         * 【已集成Markdown】创建普通回忆卡片DOM元素
-         */
-        // ⬇️ ⬇️ ⬇️ 替换开始 ⬇️ ⬇️ ⬇️
-        // 我们把这个函数的内容完全替换成你想要的番茄小说卡片样式
-        function createMemoryCard(memory) {
-            
-            // --- 首先，处理“约定达成”的卡片（这是旧功能，我们必须保留它） ---
-            if (memory.type === 'countdown' && memory.targetDate) {
-                // 对于已到期的约定，我们还用旧的卡片样式来显示，但套用新CSS的边框
-                const card = document.createElement('div');
-                card.className = 'memory-card'; // 它会复用我们新CSS里的基础样式
-                const memoryDate = new Date(memory.timestamp);
-                const dateString = `${memoryDate.getFullYear()}-${String(memoryDate.getMonth() + 1).padStart(2, '0')}-${String(memoryDate.getDate()).padStart(2, '0')}`;
-                
-                // 我们把它简化一下，只显示标题和内容
-                const titleHtml = `[约定达成] ${memory.description}`;
-                const contentHtml = parseMarkdown(`在 ${new Date(memory.targetDate).toLocaleString()}，我们一起见证了这个约定。`).replace(/\n/g, '<br>');
-                
-                // 套用新样式里的 class 名，让它看起来统一
-                card.innerHTML = `
-                    <div class="memory-title" style="color: var(--accent-color);">${titleHtml}</div>
-                    <div class="memory-preview">${contentHtml}</div>
-                    <div class="memory-signature" style="margin-top: 5px;">${dateString}</div>
-                `;
-                // 别忘了给它也加上长按删除
-                addLongPressListener(card, async () => {
-                    const confirmed = await showCustomConfirm('删除记录', '确定要删除这条记录吗？', { confirmButtonClass: 'btn-danger' });
-                    if (confirmed) {
-                        await db.memories.delete(memory.id);
-                        renderMemoriesScreen();
-                    }
-                });
-                return card;
-            }
-        
-            // --- 其次，处理你想要的“AI生成回忆”卡片 (ai_generated) ---
-            // (我们假设AI生成的回忆，都带有 title 和 spicyReview 字段)
-            const card = document.createElement('div');
-            card.className = 'memory-card'; // 使用我们新的CSS样式
-        
-            // 1. 准备数据
-            const memoryDate = new Date(memory.timestamp);
-            const dateString = `${memoryDate.getFullYear()}年${memoryDate.getMonth() + 1}月${memoryDate.getDate()}日`;
-            
-            let authorDisplayName = '一位朋友';
-            // 作者名字的逻辑我们保持不变
-            if (memory.authorId) {
-                const authorChat = state.chats[memory.authorId];
-                if (authorChat) {
-                    authorDisplayName = authorChat.name; // 用角色的备注名
-                } else {
-                    authorDisplayName = memory.authorName || '一位朋友'; 
-                }
-            } else if (memory.authorName) {
-                authorDisplayName = memory.authorName; 
-            }
-        
-            // 这是AI生成的正文（它应该已经包含了首行缩进和换行符 \n）
-            const fullText = memory.description || '(AI偷懒了，没有写正文内容...)';
-            // 截取前50个字作为预览 (我们去掉换行符让预览更整洁)
-            const previewText = fullText.replace(/\n/g, ' ').substring(0, 50) + '...';
-            
-            // 2. 填充HTML结构 (注意：onclick都去调用我们新加的 toggleMemoryView 函数)
-            card.innerHTML = `
-                <div class="memory-title" onclick="toggleMemoryView(this)">
-                    ${memory.title || '震惊！AI忘记写标题了！'}
-                </div>
-        
-                <div class="memory-preview" onclick="toggleMemoryView(this)">
-                    ${previewText}
-                </div>
-        
-                <div class="memory-full-content">
-                    <pre class="memory-body-text">${fullText}</pre>
-                    
-                    <div class="memory-spicy-review">
-                        <strong>AI辣评：</strong> ${memory.spicyReview || '（AI这次词穷了，没有留下辣评。）'}
-                    </div>
-                    
-                    <div class="memory-signature">
-                        ${authorDisplayName}<br>
-                        ${dateString}
-                    </div>
-                </div>
-        
-                <button class="memory-toggle-btn" onclick="toggleMemoryView(this)">展开阅读全文</button>
-            `;
-        
-            // 3. 别忘了给新卡片也加上长按删除功能 (这个功能不能丢)
-            addLongPressListener(card, async () => {
-                const confirmed = await showCustomConfirm('删除记录', '确定要删除这条回忆吗？', { confirmButtonClass: 'btn-danger' });
-                if (confirmed) {
-                    await db.memories.delete(memory.id);
-                    renderMemoriesScreen();
-                }
-            });
-        
-            return card;
-        }
-        // ⬆️ ⬆️ ⬆️ 替换结束 ⬆️ ⬆️ 
-        // ▲▲▲ 替换结束 ▲▲▲
+    });
+
+    return card;
+}
         
         function createCountdownCard(countdown) {
             const card = document.createElement('div');
