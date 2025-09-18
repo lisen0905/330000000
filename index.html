@@ -5375,7 +5375,7 @@
         #profile-name { font-size: 20px; font-weight: 600; color: #1f1f1f; }
         #profile-id { font-size: 14px; color: #8a8a8a; }
         
-/* ▼▼▼ 【全新V2版】心声与散记卡片样式 ▼▼▼ */
+/* ▼▼▼ 【全新V2版】心声与欲望卡片样式 ▼▼▼ */
 
 /* 1. 卡片通用容器样式 */
 .profile-section {
@@ -5404,7 +5404,7 @@
     opacity: 0.5;
 }
 
-/* 4. 卡片头部标题文字 ("心声", "散记") */
+/* 4. 卡片头部标题文字 ("心声", "欲望") */
 .profile-section label {
     font-size: 15px;
     font-weight: 600;
@@ -6859,6 +6859,203 @@
         }
         
         /* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+              /* ▼▼▼ 【全新V3.1 | 纯CSS美化版】角色洞察“心声”与“欲望”样式 ▼▼▼ */
+
+        /* 1. 为“心声”卡片定制柔和温暖的粉色调 */
+        .profile-section.heart-voice {
+            background-color: #FDEBFO !important; /* 非常淡的粉色背景 */
+            border-left: 4px solid #FDEBFO !important; /* 柔和的珊瑚粉色左边框 */
+        }
+        .profile-section.heart-voice .profile-section-header {
+            color: #d81b60 !important; /* 图标和标题使用更有活力的玫瑰粉色 */
+            border-bottom: 1px solid rgba(255, 138, 128, 0.2) !important; /* 淡淡的粉色分割线 */
+        }
+        .profile-section.heart-voice p {
+            color: #5c2c3b !important; /* 深玫瑰色文字，保证可读性 */
+        }
+
+        /* 2. 为“欲望”卡片定制深邃神秘的暗色调 */
+        .profile-section.random-jottings {
+            background-color: #2c2c2e !important; /* 深邃的炭灰色背景 */
+            border-left: 4px solid #FDEBFO !important; /* 危险而迷人的紫色左边框 */
+        }
+        .profile-section.random-jottings .profile-section-header {
+            color: #e0e0e0 !important; /* 图标和标题使用柔和的淡紫色 */
+            border-bottom: 1px solid rgba(206, 147, 216, 0.2) !important; /* 淡淡的紫色分割线 */
+        }
+        .profile-section.random-jottings p {
+            color: #e0e0e0 !important; /* 使用明亮的浅灰色文字，确保对比度 */
+            font-style: italic !important; /* 让欲望的文字带一点斜体 */
+        }
+
+        /* 3. 同时更新两个卡片的图标（如果它们还没有被更新的话） */
+        .profile-section.heart-voice .profile-section-icon {
+            content: '❤️'; /* 强制显示红心 */
+            font-size: 0;  /* 隐藏旧的Emoji */
+        }
+        .profile-section.heart-voice .profile-section-icon::before {
+            content: '❤️';
+            font-size: 20px; /* 控制新Emoji的大小 */
+        }
+
+        .profile-section.random-jottings .profile-section-icon {
+            content: '😈'; /* 强制显示恶魔 */
+            font-size: 0;
+        }
+        .profile-section.random-jottings .profile-section-icon::before {
+            content: '😈';
+            font-size: 20px;
+        }
+        
+        /* ▲▲▲ 新增CSS结束 ▲▲▲ */
+   /* ▼▼▼ 【全新】这是您要求的时间轴样式心声记录，请将这整块代码粘贴到 <style> 的末尾 ▼▼▼ */
+
+/* 1. 历史记录列表容器，作为时间轴的“轨道” */
+#thoughts-history-list {
+    position: relative; /* 为时间轴线建立定位基准 */
+    padding: 20px 0 20px 40px; /* 左侧留出空间给时间轴线和圆点 */
+    margin-left: 10px; /* 整体稍微向右移动，避免贴边 */
+    gap: 25px; /* 增加卡片之间的垂直间距 */
+}
+
+/* 2. 使用伪元素创建中心垂直时间线 */
+#thoughts-history-list::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px; /* 将线定位在左侧padding的中间 */
+    width: 2px;
+    height: 100%;
+    background-color: var(--border-color); /* 使用您已有的边框颜色变量 */
+    z-index: 1;
+}
+
+/* 3. 【核心】重塑思想卡片，使其成为时间轴上的一个节点 */
+.thought-card {
+    position: relative; /* 为圆点和箭头建立定位基准 */
+    background-color: var(--secondary-bg); /* 使用您已有的背景色变量 */
+    border-radius: 12px; /* 更圆润的卡片圆角 */
+    padding: 15px 20px;
+    border: 1px solid var(--border-color); /* 统一边框颜色 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06); /* 更柔和的阴影 */
+}
+
+/* 夜间模式适配 */
+#phone-screen.dark-mode .thought-card {
+    box-shadow: 0 4px 12px rgba(255,255,255,0.05);
+}
+
+/* 4. 使用伪元素在时间轴上创建漂亮的圆点 */
+.thought-card::before {
+    content: '';
+    position: absolute;
+    top: 20px; /* 与卡片顶部的日期大致对齐 */
+    left: -29px; /* 精确计算位置，使其中心点在时间线上 */
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--secondary-bg);
+    border: 2px solid var(--accent-color); /* 使用您的主题色 */
+    z-index: 2; /* 确保圆点在线的上方 */
+}
+
+/* 5. (推荐) 使用伪元素创建从卡片指向圆点的小箭头 */
+.thought-card::after {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: -15px; /* 定位在卡片和圆点之间 */
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid var(--secondary-bg); /* 指向左侧 */
+    z-index: 3; /* 确保箭头在最上层 */
+    /* 添加一个细微的边框，让它在白色背景上更清晰 */
+    filter: drop-shadow(-1px 0px 0px var(--border-color));
+}
+
+/* 6. 美化卡片内部的标题和内容 */
+.thought-header {
+    font-size: 13px; /* 稍微放大一点 */
+    color: var(--text-secondary); /* 使用您的次要文本颜色 */
+    margin-bottom: 15px; /* 增加与下方内容的间距 */
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.thought-content .label {
+    gap: 8px; /* 图标和文字间距更舒适 */
+    font-weight: 600;
+    color: var(--text-primary); /* 主要文字颜色，更突出 */
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.thought-content .label svg {
+    width: 18px;
+    height: 18px;
+    color: var(--accent-color); /* 让图标也用主题色 */
+    opacity: 0.8;
+}
+
+.thought-content .text {
+    font-size: 14px;
+    color: var(--text-secondary); /* 内容使用次要颜色 */
+    line-height: 1.7;
+    white-space: pre-wrap;
+    padding-left: 26px; /* 缩进，与图标和标题对齐 */
+}
+
+.thought-content .jottings {
+    margin-top: 18px; /* “心声”和“欲望”之间的间距 */
+}
+
+/* ▲▲▲ 新增CSS粘贴结束 ▲▲▲ */
+      /* ▼▼▼ 【全新】这是您要求的红心与恶魔图标替换样式 ▼▼▼ */
+
+/* --- 1. 替换“角色洞察”弹窗内的图标 --- */
+
+/* a. 隐藏“心声”和“欲望”的旧文本图标 */
+.profile-section.heart-voice .profile-section-icon,
+.profile-section.random-jottings .profile-section-icon {
+    font-size: 0; /* 使用这个技巧隐藏掉原来的文字Emoji */
+}
+
+/* b. 使用伪元素添加新的红心图标 */
+.profile-section.heart-voice .profile-section-icon::before {
+    content: '❤️';
+    font-size: 20px; /* 您可以在这里调整图标的大小 */
+}
+
+/* c. 使用伪元素添加新的恶魔图标 */
+.profile-section.random-jottings .profile-section-icon::before {
+    content: '😈';
+    font-size: 20px; /* 您可以在这里调整图标的大小 */
+}
+
+/* --- 2. 替换“心声历史记录”时间轴内的图标 --- */
+
+/* a. 隐藏旧的SVG图标 */
+.thought-content .voice .label svg,
+.thought-content .jottings .label svg {
+    display: none;
+}
+
+/* b. 在“心声”文字前添加新的红心图标 */
+.thought-content .voice .label::before {
+    content: '❤️';
+    font-size: 16px; /* 历史记录里的图标可以稍微小一点 */
+    line-height: 1; /* 确保垂直对齐 */
+}
+
+/* c. 在“欲望”文字前添加新的恶魔图标 */
+.thought-content .jottings .label::before {
+    content: '😈';
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* ▲▲▲ 新增CSS粘贴结束 ▲▲▲ */
     </style>
 </head>
 <body>
@@ -9984,12 +10181,11 @@ commentActions.forEach(action => {
         
         // ▼▼▼ 【请用这个 V30 版本】完整替换旧的 db.version(...) 代码块 ▼▼▼
               db.version(30).stores({ 
-            chats: '&id, isGroup, groupId, isPinned',
+           chats: '&id, isGroup, groupId, isPinned',
             apiConfig: '&id', 
             globalSettings: '&id', 
-            // 【核心修改1】为表情包表增加 categoryId 索引
-            userStickers: '&id, url, name, categoryId',
-            // 【核心修改2】新增一个专门存储表情分类的表
+            // 【核心修改1】为表情增加 sourceType 字段并建立索引
+            userStickers: '&id, url, name, categoryId, sourceType',
             userStickerCategories: '++id, name',
             worldBooks: '&id, name, categoryId',
             worldBookCategories: '++id, name',
@@ -14346,9 +14542,9 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
         5.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态，也可以是和用户有关，比如用户说睡觉了，你以更改希望和用户做同一个梦。
         6.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
         7. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞、转发）。
-        8.  **【【【内心独白铁律】】】**: 在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新你角色的“心声”和“散记”。这对于展现角色的深度至关重要。
-            - **心声 (heartfelt_voice)**: 必须是一句简短的、概括角色此刻最核心、最私密想法的话，同样【必须】参考你的人设，与上下文。
-            - **散记 (random_jottings)**: 这段散记是角色在当前情境下，根据人设，有感而发的一些思考或经历，可以与当前对话内容相关，也可以是独立的小故事或心情记录，禁止语言OOC。字数必须在50字以上。
+      8.  **【【【内心独白铁律】】】**: 在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新你角色的“心声”和“欲望”。这对于展现角色的深度至关重要。
+            - **心声 (heartfelt_voice)**: 【必须】根据人设，联系上下文，说出角色内心真实的想法。
+            - **欲望 (random_jottings)**: 角色内心深处最阴暗、痴汉、病娇、或具有强烈占有欲的【欲望】。它必须详细、露骨地描写角色对用户的幻想和冲动。你的描写必须大胆、毫不掩饰，可以包含强烈的生理反应和对用户身体的渴求。这段描述【必须大于50字】，并且要完全符合你的人设，和上下文联系起来，【禁止】对身体虐向，必须是充满爱意的。【例子：她今天对我笑了，真可爱啊，很想用舌头舔遍她的全身，看她流泪可怜的样子... 我能感觉到自己的呼吸变得粗重，身体已经因为这个想法而兴奋起来了...】
         
         # 你的头像库
         - 你可以根据对话内容或你的心情，从下面的头像库中选择一个新头像来更换。
@@ -14403,7 +14599,7 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
         -   **分享链接**: '{"type": "share_link", "title": "文章标题", "description": "文章摘要...", "source_name": "来源网站名", "content": "文章的【完整】正文内容..."}'
         -   **回应转账-接受**: '{"type": "accept_transfer", "for_timestamp": 1688888888888}'
         -   **回应转账-拒绝/退款**: '{"type": "decline_transfer", "for_timestamp": 1688888888888}'
-        -   **【【【全新】】】更新内心独白**: '{"type": "update_thoughts", "heartfelt_voice": "（角色此刻最核心、最私密的想法，一句话概括）", "random_jottings": "（一段符合角色性格的散记、日记或摘抄，可以是对最近事件的感想，也可以是毫无关联的思绪。50-100字）"}'
+        -   **【【【全新】】】更新内心独白**: '{"type": "update_thoughts", "heartfelt_voice": "（角色根据人设，此刻最私密的话，一句话。）", "random_jottings": "（一段符合角色性格的散记、日记或摘抄，可以是对最近事件的感想，也可以是毫无关联的思绪。50-100字）"}'
         
         # 如何区分图片与表情:
        
@@ -14593,33 +14789,9 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
                 lastResponseTimestamps = [];
                 chat.history = chat.history.filter(msg => !msg.isTemporary);
                 const messagesArray = parseAiResponse(aiResponseContent);
-                const lastUserMessage = chat.history.filter(m => m.role === 'user' && !m.isHidden).pop();
-                if (lastUserMessage && 
-                    Array.isArray(lastUserMessage.content) && 
-                    lastUserMessage.content[0]?.type === 'image_url' &&
-                    !lastUserMessage.imageProcessed) { 
-                    
-                    const firstTextResponse = messagesArray.find(msg => msg.type === 'text');
-                    let description;
-                    if (firstTextResponse && (firstTextResponse.content || firstTextResponse.message)) {
-                        description = String(firstTextResponse.content || firstTextResponse.message).trim();
-                    } else {
-                        description = "AI已接收并理解了该图片的内容。";
-                    }
-                    
-                    const imageMessageIndex = chat.history.findIndex(m => m.timestamp === lastUserMessage.timestamp);
-                    
-                    if (imageMessageIndex > -1) {
-                        console.log(`识图优化：正在将时间戳为 ${lastUserMessage.timestamp} 的图片消息替换为文字描述...`);
+              
                         
-                        const replacementText = `[系统提示：用户之前发送了一张图片，AI对图片的首次回应（摘要）是：“${description}”]`;
-                        chat.history[imageMessageIndex].content = replacementText;
-                        
-                        chat.history[imageMessageIndex].imageProcessed = true;
-                        chat.history[imageMessageIndex].type = 'text'; 
-                        
-                    }
-                }
+            
                 const isViewingThisChat = document.getElementById('chat-interface-screen').classList.contains('active') && state.activeChatId === chatId;
                 let callHasBeenHandled = false;
                 let messageTimestamp = Date.now();
@@ -15628,35 +15800,44 @@ case 'qzone_post':
          * 【全新 | V3.0 - 快捷识图版】发送表情包的核心函数
          * 现在，它会将表情作为一张真正的图片发送给AI进行实时识别。
          */
-        async function sendSticker(sticker) {
+          async function sendSticker(sticker) {
             if (!state.activeChatId) return;
             const chat = state.chats[state.activeChatId];
-        
-            // 【【【这就是最核心的修改！】】】
-            // 我们不再创建一个 {type: 'sticker'} 的消息。
-            // 而是创建一个和用户手动“上传图片”时完全一样的消息结构。
-            const msg = {
-                role: 'user',
-                // 我们复用 user_photo 类型，来标记这是一张来自用户的图片
-                type: 'user_photo', 
+            let msg; // 先声明一个空的消息对象
+
+            // ▼▼▼ 【【【核心调度逻辑】】】 ▼▼▼
+            // 1. 如果表情是本地上传的 (sourceType === 'local')，或者没有来源标记（兼容旧数据）
+            //    就执行“快捷识图”模式，将图片数据和含义一起发送。
+            if (sticker.sourceType === 'local' || !sticker.sourceType) {
                 
-                // 这是多模态消息的标准格式，包含一个图片URL
-                content: [{
-                    type: 'image_url',
-                    image_url: {
-                        url: sticker.url 
-                    }
-                }],
+                msg = {
+                    role: 'user',
+                    type: 'user_photo', // 使用图片类型
+                    content: [{
+                        type: 'image_url',
+                        image_url: { url: sticker.url }
+                    }],
+                    meaning: sticker.name, // 带上含义
+                    timestamp: Date.now()
+                };
+
+            } 
+            // 2. 如果表情明确标记为URL来源 (sourceType === 'url')
+            //    就执行兼容的“纯文本通知”模式。
+            else if (sticker.sourceType === 'url') {
                 
-                // 【关键】我们把表情的名字（含义）也一起带上。
-                // 这不是给AI直接看的，而是用于在下一步构建AI记忆时，
-                // 告诉AI“用户发的这张图是什么意思”。
-                meaning: sticker.name, 
-                
-                timestamp: Date.now()
-            };
-            // ▲▲▲ 修改结束 ▲▲▲
-        
+                msg = {
+                    role: 'user',
+                    type: 'sticker', // 使用独立的 sticker 类型
+                    content: sticker.url, // content 就是一个简单的URL字符串
+                    meaning: sticker.name,
+                    timestamp: Date.now()
+                };
+
+            }
+            // ▲▲▲ 调度结束 ▲▲▲
+
+            // 无论哪种模式，后续的保存和渲染流程都是一样的
             chat.history.push(msg);
             await db.chats.put(chat);
             appendMessage(msg, chat);
@@ -20435,7 +20616,8 @@ function createMemoryCard(memory) {
                         name: name,
                         url: baseUrl + code,
                         isRecognized: true,
-                        categoryId: categoryId // 【核心修改2】将选中的分类ID赋给每个新表情
+                        categoryId: categoryId, // 【核心修改2】将选中的分类ID赋给每个新表情
+                        sourceType: 'url'
                     });
                 } else {
                     errorCount++;
@@ -23198,7 +23380,7 @@ function updateMusicProgressBar() {
                     <div class="jottings">
                         <div class="label">
                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path></svg>
-                            散记
+                            欲望
                         </div>
                         <p class="text">${thought.randomJottings}</p>
                     </div>
@@ -23275,7 +23457,8 @@ function compressImage(file, options = { maxWidth: 200, quality: 0.8 }) {
                         name: file.name,
                         url: compressedBase64,
                         isRecognized: false,
-                        categoryId: categoryId // 【核心修改2】将选中的分类ID赋给每个新表情
+                        categoryId: categoryId ,// 【核心修改2】将选中的分类ID赋给每个新表情
+                       sourceType: 'local'
                     });
                     successCount++;
                 } catch (error) {
@@ -29733,17 +29916,17 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
     <!-- “心声”卡片的新结构 -->
     <div class="profile-section heart-voice">
         <div class="profile-section-header">
-            <span class="profile-section-icon">💭</span>
+         <span class="profile-section-icon">❤️</span>
             <label>心声</label>
         </div>
         <p id="profile-heartfelt-voice"></p>
     </div>
 
-    <!-- “散记”卡片的新结构 -->
+    <!-- “欲望”卡片的新结构 -->
     <div class="profile-section random-jottings">
         <div class="profile-section-header">
-            <span class="profile-section-icon">📌</span>
-            <label>散记</label>
+         <span class="profile-section-icon">😈</span>
+            <label>欲望</label>
         </div>
         <p id="profile-random-jottings"></p>
     </div>
