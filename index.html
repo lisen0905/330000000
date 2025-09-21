@@ -34,35 +34,39 @@
         
         /* --- 请用下面这【一整块】全新的代码，替换掉你现有的 html, body, 和 #phone-screen 样式 --- */
         
-        /* 1. 重置 html 元素 */
+     /* 1. HTML基础设置：撑满、防抖动 */
         html {
             -webkit-text-size-adjust: 100%;
-            height: 100%; /* 确保html元素也能撑满 */
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior-y: contain; /* 禁止页面在滚动到顶部或底部时触发浏览器的“回弹”效果 */
         }
         
-        /* 2. 设置 body 为全屏画布 */
+        /* 2. Body基础设置：撑满、防滚动 */
         body {
             margin: 0;
             font-family: 'bulangni', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-weight: normal;
             background-color: #f0f2f5;
-            height: 100%; /* 让body也撑满父元素(html) */
+            height: 100%;
             overflow: hidden; /* 防止body本身出现滚动条 */
+            position: fixed; /* 【核心】固定body，防止键盘弹出时页面整体上移 */
+            width: 100%;
         }
         
-        /* --- Start of Replacement Code --- */
-        
+   /* 3. 【核心】手机主容器样式：使用JS变量来锁定高度 */
         #phone-screen {
             width: 100%;
-            /* Use 100vh to ensure it fills the entire screen height */
-            height: 100vh; 
+            /* 我们将不再使用 100% 或 100vh，而是使用一个由JS设置的CSS变量 */
+            height: var(--app-height, 100%);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            background-color: #ffffff; /* Your desired white background */
+            background-color: #ffffff;
         }
-        
+
+        /* ▲▲▲ 【修复结束】 ▲▲▲ */
         #chat-input-area {
             flex-shrink: 0;
             padding: 8px;
@@ -726,11 +730,12 @@
             transform: translateX(-50%);
         }
         
-        .qzone-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            /* padding-top: 80px;  <-- 删除这个，因为header不再是absolute了 */
-        }
+      .qzone-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    /* ▼▼▼ 新增下面这一行代码 ▼▼▼ */
+    padding-bottom: 90px;
+}
         
         .qzone-profile-header {
             position: relative;
@@ -853,7 +858,19 @@
         }
         
         /* ▲▲▲ 新样式替换结束 ▲▲▲ */
-        
+
+#memories-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    /* ▼▼▼ 新增下面这一行代码 ▼▼▼ */
+    padding-bottom: 90px;
+}
+
+      
         /* ▼▼▼ 把所有这些新样式粘贴到 <style> 的末尾 ▼▼▼ */
         
         /* === 动态功能栏样式 === */
@@ -6262,22 +6279,167 @@
 
 /* --- 2. 【最终修复】重新定义主屏幕布局 --- */
 
-#home-screen {
-    background: linear-gradient(135deg, #6DD5FA, #2980B9);
-    /* ▼▼▼ 核心修复：添加下面这两行 ▼▼▼ */
-    background-size: cover;
-    background-position: center;
-    /* ▲▲▲ 修复结束 ▲▲▲ */
-    padding: 20px;
-    padding-top: calc(20px + env(safe-area-inset-top));
-    padding-bottom: calc(20px + env(safe-area-inset-bottom));
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-    align-items: center;
-    height: 100%;
-}
+/* ▼▼▼ 【布局终极修复】请用这一整块代码，完整替换掉您旧的所有主屏幕和个人资料相关CSS ▼▼▼ */
+
+        /* --- 1. 重新定义主屏幕布局，移除垂直内边距 --- */
+        #home-screen {
+            background: linear-gradient(135deg, #6DD5FA, #2980B9);
+            background-size: cover;
+            background-position: center;
+            padding-left: 20px;  /* 保留水平内边距 */
+            padding-right: 20px; /* 保留水平内边距 */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            overflow: hidden; /* 添加一道保险，强制禁止滚动 */
+        }
+
+        /* --- 2. 将顶部留白改为外边距，应用到内容区 --- */
+        #main-content-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px; 
+            align-items: center;
+            margin-top: calc(20px + env(safe-area-inset-top)); /* 核心修改：使用 margin 代替 padding */
+        }
+
+        /* --- 3. 个人资料卡片 (所有样式保持不变) --- */
+        #profile-widget {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            flex-shrink: 0;
+        }
+        #profile-banner-img {
+            display: block; 
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 24px 24px 0 0;
+            position: relative;
+            z-index: 1;
+        }
+        #profile-widget .profile-avatar-container {
+            position: absolute;
+            top: 80px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: white; 
+            padding: 4px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3;
+        }
+        #profile-widget .profile-info {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            margin-top: -24px; 
+            padding-top: 44px; 
+            min-height: 120px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-bottom: 15px;
+            text-align: center;
+            color: #1c1c1e;
+            position: relative;
+            z-index: 2;
+        }
+        #profile-avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        #profile-username { font-size: 18px; font-weight: 600; margin: 0 0 2px 0; }
+        #profile-sub-username { font-size: 13px; color: #8a8a8a; margin: 0 0 10px 0; }
+        #profile-bio { font-size: 14px; margin: 0 0 12px 0; color: #333; }
+        #profile-location {
+            font-size: 12px; color: #8a8a8a; margin: 0 auto; display: inline-flex;
+            align-items: center; gap: 4px; background-color: rgba(0,0,0,0.05);
+            padding: 3px 9px; border-radius: 10px;
+        }
+
+        /* --- 4. 中间布局和桌面小组件 (所有样式保持不变) --- */
+        #desktop-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 20px;
+            width: 100%;
+            align-items: start;
+        }
+        #desktop-widget-column { display: flex; flex-direction: column; gap: 12px; }
+        .widget-header { font-size: 14px; font-weight: 500; color: rgba(255, 255, 255, 0.8); margin: 0 0 5px 5px; }
+        .desktop-widget {
+            background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 18px; padding: 12px 15px; color: #1f1f1f; 
+            font-weight: 500; font-size: 13px; display: flex; align-items: center;
+        }
+        .desktop-widget.text-only { background-color: transparent; border: none; padding: 0; box-shadow: none; }
+        .desktop-widget.icon-left { justify-content: flex-start; gap: 10px; }
+        .desktop-widget.icon-right { justify-content: flex-end; gap: 10px; }
+        .desktop-widget img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .desktop-widget p, .desktop-widget span { margin: 0; }
+        #desktop-app-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-content: start; }
+
+        /* --- 5. 将底部留白改为外边距，应用到 Dock 区 --- */
+        #desktop-dock {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            width: fit-content;
+            flex-shrink: 0;
+            margin-bottom: calc(20px + env(safe-area-inset-bottom)); /* 核心修改：使用 margin 代替 padding */
+        }
+        
+        /* --- 6. 桌面图标 (所有样式保持不变) --- */
+        .desktop-app-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; }
+        .icon-bg-desktop {
+            width: 55px; height: 55px; border-radius: 14px; background-color: #f0f2f5; 
+            justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            transition: transform 0.2s ease; overflow: hidden;
+        }
+        .icon-bg-desktop img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+        .desktop-app-icon .label { color: #333; font-size: 13px; font-weight: 500; }
+        .desktop-app-icon:active .icon-bg-desktop { transform: scale(0.9); }
+
+        /* --- 7. 可编辑区域样式 (所有样式保持不变) --- */
+        .editable-text, .editable-image { cursor: pointer; transition: all 0.2s ease-in-out; }
+        .editable-text:hover, .editable-image:hover {
+            outline: 2px dashed rgba(255, 255, 255, 0.8);
+            opacity: 0.9;
+            border-radius: 4px;
+        }
+        
+        /* --- 8. 个人资料卡片背景渐变 (所有样式保持不变) --- */
+        #profile-widget .profile-info {
+            background: transparent !important;
+            position: relative;
+            z-index: 1;
+        }
+        #profile-widget .profile-info::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            z-index: -1;
+        }
+        /* ▲▲▲ 替换结束 ▲▲▲ */
 
 /* --- 替换这一整块代码 --- */
 /* ▼▼▼ 请用这整块新代码替换旧的 #main-content-area 样式 ▼▼▼ */
@@ -6918,7 +7080,7 @@
 /* ▲▲▲ 新增CSS结束 ▲▲▲ */
 
 
-/* ▼▼▼ 【全新柔和版】心声与欲望卡片美化样式 ▼▼▼ */
+/* ▼▼▼ 【全新柔和版】心声与想要卡片美化样式 ▼▼▼ */
 
 /* 统一设置卡片内的文字颜色为柔和的深灰色，避免纯黑的刺眼感 */
 .profile-section.heart-voice p,
@@ -6936,7 +7098,7 @@
     color: #B28381; /* 饱和度更低的豆沙色标题 */
 }
 
-/* “欲望”卡片的【柔和冷色调】风格 */
+/* “想要”卡片的【柔和冷色调】风格 */
 .profile-section.devils-desire {
     background-color: #F5F7FF; /* 宁静的淡雅蓝背景 */
     color: #4A4A4A; /* 文字颜色同样设为柔和的深灰色 */
@@ -6953,8 +7115,278 @@
     text-shadow: none;
 }
 /* ▲▲▲ 新增CSS结束 ▲▲▲ */
+/* ▼▼▼ 【全新】论坛功能基础样式 ▼▼▼ */
+.forum-section-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 10px 0 8px 5px;
+    text-transform: uppercase;
+}
+.forum-category-item {
+    background-color: var(--secondary-bg);
+    padding: 18px 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.forum-category-item:active {
+    transform: scale(0.98);
+}
+#phone-screen.dark-mode .forum-category-item {
+    background-color: #2c2c2e;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+/* ▼▼▼ 【全新】论坛设置面板样式 ▼▼▼ */
+#forum-settings-accordion .accordion-header {
+    background-color: var(--secondary-bg);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#forum-settings-accordion .accordion-header::after {
+    content: '▼';
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+#forum-settings-accordion.expanded .accordion-header::after {
+    transform: rotate(180deg);
+}
+#forum-settings-accordion .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out;
+    padding: 0 10px;
+}
+#forum-settings-accordion.expanded .accordion-content {
+    max-height: 1000px; /* 一个足够大的值 */
+}
+.forum-setting-item {
+    padding: 12px 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+.forum-setting-item label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+.forum-setting-item .setting-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+
+/* ▼▼▼ 【全新】论坛帖子列表及详情样式 (跳转页面版) ▼▼▼ */
+.forum-post-item {
+    background-color: var(--secondary-bg);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.forum-post-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.post-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.post-preview {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.post-hashtags {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.post-hashtags .tag {
+    font-size: 12px;
+    background-color: #f0f2f5;
+    color: var(--accent-color);
+    padding: 3px 8px;
+    border-radius: 10px;
+}
+#forum-post-detail-container h1 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+#forum-post-detail-container .author-info {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+#forum-post-detail-container pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.7;
+}
+.post-comments-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--border-color);
+}
+.comment-item-container {
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+.comment-main {
+    background-color: #f0f2f5;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+.comment-author {
+    font-weight: 600;
+    color: var(--accent-color);
+}
+.comment-replies {
+    padding-left: 20px;
+    margin-top: 8px;
+    border-left: 2px solid #e0e0e0;
+}
+.reply-item {
+    margin-top: 5px;
+}
+/* 夜间模式适配 */
+#phone-screen.dark-mode .post-hashtags .tag,
+#phone-screen.dark-mode .comment-main {
+    background-color: #38383a;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
+      
+ /* ▼▼▼ 【全新】论坛交互功能样式 ▼▼▼ */
+#forum-post-detail-footer {
+    flex-shrink: 0;
+    padding: 8px 15px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    background-color: var(--secondary-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#forum-reply-input {
+    flex-grow: 1;
+    border: none;
+    background-color: #f0f2f5;
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 16px;
+    resize: none;
+}
+#phone-screen.dark-mode #forum-reply-input {
+    background-color: #38383a;
+}
+#forum-send-reply-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 18px;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.comment-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+    justify-content: flex-end;
+}
+.comment-action-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* 转发到私聊的卡片样式 */
+.forum-forward-card {
+    width: 220px;
+    background-color: #f7f7f7;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.forward-card-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.forward-card-content {
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#phone-screen.dark-mode .forum-forward-card {
+    background-color: #2c2c2e;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */     
+
+
+        /* ▼▼▼ 【全新】论坛设置面板美化样式 ▼▼▼ */
+
+        /* 1. 为每个设置项增加上下间距，让它们彻底分开 */
+        .forum-setting-item {
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+
+        /* 2. 让描述文字的颜色更柔和，并与标题拉开一点距离 */
+        .forum-setting-item .setting-description {
+            color: #8a8a8a; /* 使用一个更柔和的灰色 */
+            margin-top: 5px; /* 增加与上方标题的间距 */
+        }
+
+        /* 3. 【核心】针对带开关的行，让左侧的文字区和右侧的开关保持距离 */
+        .forum-setting-item > div:first-child {
+            flex-grow: 1; /* 让文字区占据主要空间 */
+            padding-right: 15px; /* 在文字和开关之间增加15像素的右边距 */
+        }
+        /* ▲▲▲ 新增CSS结束 ▲▲▲ */```
+
 
       
+   /* ▼▼▼ 【全新】论坛自定义界面按钮右对齐修正 ▼▼▼ */
+
+/* 1. 确保包含图片和按钮的容器宽度能撑满，这是右对齐的前提 */
+#forum-customization-form .avatar-upload {
+    width: 100%;
+}
+
+/* 2. 【核心】为第一个上传按钮设置自动左边距 */
+/*    这会把它自己和它后面的所有兄弟元素一起推到最右边 */
+#forum-customization-form .avatar-upload .upload-btn:first-of-type {
+    margin-left: auto;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
     </style>
 </head>
 <body>
@@ -7025,10 +7457,9 @@
                     <div class="icon-bg-desktop"><img id="icon-img-world-book" src="https://i.postimg.cc/HWf1JKzn/IMG-6435.jpg" alt="世界书"></div>
                     <span class="label">世界书</span>
                 </div>
-               <div class="desktop-app-icon" onclick="alert('论坛功能待开发');">
-                    <div class="icon-bg-desktop"><img id="icon-img-forum" src="https://i.postimg.cc/BvW5p1Jc/IMG-6439.jpg" alt="论坛"></div>
-                    <span class="label">论坛</span>
-                </div>
+             <div class="desktop-app-icon" onclick="showScreen('forum-main-screen')"> <div class="icon-bg-desktop"><img id="icon-img-forum" src="https://i.postimg.cc/BvW5p1Jc/IMG-6439.jpg" alt="论坛"></div>
+                <span class="label">论坛</span>
+            </div>
                 <div class="desktop-app-icon" onclick="alert('情侣空间功能待开发');">
                     <div class="icon-bg-desktop"><img id="icon-img-couple-space" src="https://i.postimg.cc/fy02G1z5/IMG-6441.jpg" alt="情侣空间"></div>
                     <span class="label">情侣空间</span>
@@ -7066,7 +7497,9 @@
         <!-- ▼▼▼ 【请用这个新版本】完整替换旧的 world-book-screen ▼▼▼ -->
         <div id="world-book-screen" class="screen">
             <div class="header">
-                <span class="back-btn" onclick="showScreen('home-screen')">‹</span>
+              <span class="back-btn" onclick="showScreen('home-screen')">
+    <img id="forum-main-back-btn-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E" alt="Back">
+</span>
                 <span>世界书</span>
                 <div class="header-actions">
                     <!-- 【核心修改1】将文字按钮替换为SVG图标 -->
@@ -7651,13 +8084,11 @@
                 <span>外观设置</span>
                 <span style="width: 30px;"></span>
             </div>
-          
             <div class="form-container">
                 <!-- 壁纸设置部分 -->
                 <div id="wallpaper-preview">点击下方上传</div>
                 <button class="form-button" onclick="document.getElementById('wallpaper-upload-input').click();">上传壁纸</button>
                 <input type="file" id="wallpaper-upload-input" accept="image/*">
-              <input type="file" id="app-icon-upload-input" accept="image/*" hidden>
                 <!-- 夜间模式开关 -->
                 <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
                     <label for="theme-toggle-switch" style="margin-bottom: 0;">夜间模式</label>
@@ -7870,7 +8301,157 @@
                 <!-- 通话记录卡片将由JS动态生成在这里 -->
             </div>
         </div>
+  <div id="forum-customization-screen" class="screen">
+    <div class="header">
+        <span class="back-btn" id="back-from-forum-custom">‹</span>
+        <span>论坛外观自定义</span>
+        <span class="save-btn" id="save-forum-custom-btn">保存</span>
+    </div>
+    <div id="forum-customization-form" class="form-container">
+        <h3 style="width: 100%; text-align: left;">论坛主页设置</h3>
+        <div class="form-group" style="width:100%;">
+            <label>主页背景</label>
+            <div class="avatar-upload">
+                <img id="main-bg-preview" class="bg-preview-img" style="display: block; max-width: 100%; height: auto;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="mainBackground" data-preview="main-bg-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="mainBackground" data-preview="main-bg-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>主页返回按钮图标</label>
+            <div class="avatar-upload">
+                <img id="main-back-btn-preview" style="width: 30px; height: 30px;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="mainBackBtnIcon" data-preview="main-back-btn-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="mainBackBtnIcon" data-preview="main-back-btn-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>分区按钮1 (“日常灌水”) 背景</label>
+            <div class="avatar-upload">
+                <img id="cat-btn1-preview" class="bg-preview-img" style="display: block; max-width: 100%; height: auto;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="categoryBtn1Bg" data-preview="cat-btn1-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="categoryBtn1Bg" data-preview="cat-btn1-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>分区按钮2 (“短篇小说”) 背景</label>
+            <div class="avatar-upload">
+                <img id="cat-btn2-preview" class="bg-preview-img" style="display: block; max-width: 100%; height: auto;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="categoryBtn2Bg" data-preview="cat-btn2-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="categoryBtn2Bg" data-preview="cat-btn2-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>分区按钮3 (“秘密树洞”) 背景</label>
+            <div class="avatar-upload">
+                <img id="cat-btn3-preview" class="bg-preview-img" style="display: block; max-width: 100%; height: auto;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="categoryBtn3Bg" data-preview="cat-btn3-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="categoryBtn3Bg" data-preview="cat-btn3-preview">网络URL</button>
+            </div>
+        </div>
+        
+        <hr style="width: 90%; opacity: 0.2; margin: 20px 0;">
+
+        <h3 style="width: 100%; text-align: left;">分区页面设置</h3>
+        <div class="form-group" style="width:100%;">
+            <label>分区页背景</label>
+            <div class="avatar-upload">
+                <img id="category-bg-preview" class="bg-preview-img" style="display: block; max-width: 100%; height: auto;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="categoryBackground" data-preview="category-bg-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="categoryBackground" data-preview="category-bg-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>分区页返回按钮图标</label>
+            <div class="avatar-upload">
+                <img id="category-back-btn-preview" style="width: 30px; height: 30px;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="categoryBackBtnIcon" data-preview="category-back-btn-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="categoryBackBtnIcon" data-preview="category-back-btn-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>刷新按钮图标</label>
+            <div class="avatar-upload">
+                <img id="category-refresh-btn-preview" style="width: 30px; height: 30px;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="categoryRefreshBtnIcon" data-preview="category-refresh-btn-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="categoryRefreshBtnIcon" data-preview="category-refresh-btn-preview">网络URL</button>
+            </div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label>帖子卡片背景</label>
+            <div class="avatar-upload">
+                <img id="post-card-bg-preview" class="bg-preview-img" style="display: block; max-width: 100%; height: auto;">
+                <button class="form-button-secondary upload-btn" data-type="local" data-key="postCardBackground" data-preview="post-card-bg-preview">本地上传</button>
+                <button class="form-button-secondary upload-btn" data-type="url" data-key="postCardBackground" data-preview="post-card-bg-preview">网络URL</button>
+            </div>
+        </div>
+
+        <hr style="width: 90%; opacity: 0.2; margin: 20px 0;">
+        <button id="reset-forum-custom-btn" class="form-button form-button-secondary" style="background-color: #ffebee; color: #c62828; border-color: #ef9a9a;">恢复默认外观</button>
+    </div>
+</div>
+
+<div id="forum-main-screen" class="screen">
+    <div class="header">
+        <span class="back-btn" onclick="showScreen('home-screen')">
+            <img id="forum-main-back-btn-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E" alt="Back">
+        </span>
+        <span>论坛</span>
+        <span class="action-btn" id="open-forum-customization-btn" title="自定义论坛外观">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </span>
+    </div>
+    <!-- 核心修复：将所有内容都放回这个 list-container 中 -->
+    <div class="list-container" style="padding: 15px; display: flex; flex-direction: column; gap: 20px;">
+        <div id="forum-presets-container"></div>
+        <div id="forum-settings-accordion"></div>
+        <!-- 核心修复：确保这个 div 的 ID 是 "forum-categories-list" -->
+        <div id="forum-categories-list"></div>
+    </div>
+</div>
+      
+ 
+<div id="forum-category-screen" class="screen">
+    <div class="header">
+      <span class="back-btn" id="forum-category-back-btn">
+          <img id="forum-category-back-btn-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E" alt="Back">
+      </span>
+      <span id="forum-category-title">分区</span>
+      <span class="action-btn" id="forum-refresh-btn" title="刷新帖子">
+          <img id="forum-category-refresh-btn-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4'%3E%3C/path%3E%3Cpath d='M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4'%3E%3C/path%3E%3C/svg%3E" alt="Refresh">
+      </span>
+    </div>
+    <!-- ▼▼▼ 核心修复：在这里补上缺失的内容容器 ▼▼▼ -->
+    <div class="list-container" id="forum-posts-list-container">
+         <!-- 帖子列表将由JS动态生成在这里 -->
+    </div>
+    <!-- ▲▲▲ 修复结束 ▲▲▲ -->
+</div>
+
+
         <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
+
+<div id="forum-post-detail-screen" class="screen">
+    <div class="header">
+        <span class="back-btn" id="forum-post-detail-back-btn">‹ </span>
+        <span id="forum-post-detail-title">帖子详情</span>
+        <span class="action-btn" id="forum-forward-post-btn" title="转发帖子">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+        </span>
+    </div>
+    <div class="list-container" id="forum-post-detail-container">
+         </div>
+  
+</div>
+
+
+  
         <!-- ▼▼▼ 【全新】购物功能相关页面与弹窗 (V4.0 - 仿淘宝终极版) ▼▼▼ -->
         <div id="shopping-screen" class="screen">
             <div class="header">
@@ -8860,6 +9441,28 @@
     <input type="file" id="ai-avatar-upload-input" accept="image/*" hidden>
     <input type="file" id="group-avatar-upload-input" accept="image/*" hidden>
     <script>
+
+// ▼▼▼ 【全新添加：屏幕高度动态修复方案】 ▼▼▼
+
+/**
+ * 获取当前窗口的真实可视高度，并设置给主容器
+ */
+function setScreenHeight() {
+    const phoneScreen = document.getElementById('phone-screen');
+    if (phoneScreen) {
+        // window.innerHeight 能最精确地获取到当前可见区域的高度
+        phoneScreen.style.height = `${window.innerHeight}px`;
+    }
+}
+
+// 1. 在页面加载时，立即执行一次，设置初始高度
+window.addEventListener('load', setScreenHeight);
+
+// 2. 当窗口尺寸变化时（包括键盘弹出/收起），再次执行
+window.addEventListener('resize', setScreenHeight);
+
+// ▲▲▲ 【代码添加结束】 ▲▲▲
+      
 // ▼▼▼ 在这里粘贴下面的新代码 ▼▼▼
 if (!Array.prototype.findLastIndex) {
   Object.defineProperty(Array.prototype, 'findLastIndex', {
@@ -10121,7 +10724,10 @@ commentActions.forEach(action => {
             callRecords: '++id, chatId, timestamp, customName',
             shoppingProducts: '++id, name, description',
             apiPresets: '++id, name',
-            renderingRules: '++id, name, chatId'
+            renderingRules: '++id, name, chatId',
+                 forumPresets: '++id, name', 
+    forumPosts: '++id, category', 
+     forumAppearanceSettings: '&id',
         }).
           upgrade(tx => {
             // 这个升级函数会自动处理数据迁移
@@ -10229,41 +10835,7 @@ commentActions.forEach(action => {
                 await renderStickerCategoriesInManager();
             }
         }
-/**
- * 【全新】图片压缩核心函数
- * @param {File} file - 用户选择的图片文件
- * @param {object} options - 压缩选项 { maxWidth, quality }
- * @returns {Promise<string>} - 返回压缩后的Base64格式图片URL
- */
-function compressImage(file, options = { maxWidth: 128, quality: 0.9 }) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = event => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const scaleRatio = options.maxWidth / img.width;
-                const newWidth = img.width > options.maxWidth ? options.maxWidth : img.width;
-                const newHeight = img.width > options.maxWidth ? img.height * scaleRatio : img.height;
 
-                canvas.width = newWidth;
-                canvas.height = newHeight;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-                const compressedDataUrl = canvas.toDataURL('image/webp', options.quality);
-                resolve(compressedDataUrl);
-            };
-            img.onerror = error => reject(error);
-        };
-        reader.onerror = error => reject(error);
-    });
-}
-
-// async function handleDeleteStickerClick(event) { ... }
 /**
  * 【全新】处理“清空当前分类”按钮的点击事件
  */
@@ -13508,7 +14080,24 @@ async function handleLocalVisualStickerSave(event) {
                     const previewItems = msg.items.slice(0, 3); let previewHtml = ''; previewItems.forEach(item => { previewHtml += `<div class="gift-preview-item"><img src="${item.imageUrl}" class="gift-preview-img"><span class="gift-preview-name">${item.name}</span><span class="gift-preview-quantity">x${item.quantity}</span></div>`; });
                     let moreItemsText = ''; if (msg.items.length > 3) { moreItemsText = ` 等${msg.items.length}件商品`; }
                     contentHtml = `<div class="gift-card"><div class="gift-header"><svg class="gift-header-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-2.18a4 4 0 0 0-7.64 0H8a4 4 0 0 0-4 4v2h20V10a4 4 0 0 0-4-4zM8 4a2 2 0 1 1-2 2a2 2 0 0 1 2-2zm12 0a2 2 0 1 1-2 2a2 2 0 0 1 2-2zM4 14v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6H4z"></path></svg><span class="gift-header-text">${headerText}</span></div><div class="gift-items-preview">${previewHtml}</div><div class="gift-footer">共${msg.items.length}件商品${moreItemsText}，点击查看</div></div>`;
-                }
+                }// 【【【全新添加：处理论坛转发卡片的逻辑】】】
+  else if (msg.type === 'forum_forward') {
+            bubble.classList.add('is-card-like');
+            const payload = msg.payload;
+            
+            // 安全检查，确保 payload 和 payload.content 存在
+            if (payload && payload.content) {
+                contentHtml = `
+                    <div class="forum-forward-card">
+                        <div class="forward-card-title">分享了一个帖子${payload.type === 'comment' ? '的评论' : ''}</div>
+                        <div class="forward-card-content">“${payload.content}”</div>
+                    </div>
+                `;
+            } else {
+                // 如果数据不完整，显示一个错误提示，而不是 "undefined"
+                contentHtml = `<div class="forum-forward-card"><div class="forward-card-title">分享内容加载失败</div></div>`;
+            }
+        } 
             } else {
                 const processedContent = String(rawContent); // 确保是字符串
                 let processedByRule = await applyRenderingRules(processedContent, chat.id);
@@ -13716,53 +14305,64 @@ async function handleLocalVisualStickerSave(event) {
          * - 彻底修复了对第三方API的兼容性问题
          * - 增强了错误处理和日志记录
          */
-        async function triggerAiResponse() {
-            if (!state.activeChatId) return;
-            const chatId = state.activeChatId;
-            const chat = state.chats[state.activeChatId];
-        
-            const isViewingThisChat = document.getElementById('chat-interface-screen').classList.contains('active') && state.activeChatId === chatId;
-        
-            setAvatarActingState(chatId, true);
-            const chatHeaderTitle = document.getElementById('chat-header-title');
-            const typingIndicator = document.getElementById('typing-indicator');
-        
-            const chatListItem = document.querySelector(`.chat-list-item[data-chat-id="${chatId}"]`);
-            const avatarInList = chatListItem ? chatListItem.querySelector('.avatar') : null;
-            if (avatarInList) {
-                avatarInList.classList.add('is-acting');
+      async function triggerAiResponse(forwardChatId = null) {
+    // 【【【核心修正1：智能选择chatId】】】
+    // 如果函数被调用时传入了 forwardChatId（来自转发功能），就使用它；否则，还像以前一样使用当前激活的聊天ID。
+    const chatId = forwardChatId || state.activeChatId;
+    if (!chatId) return;
+    const chat = state.chats[chatId];
+       // 【新加代码】在这里添加安全检查！
+            if (!chat) {
+                console.error(`triggerAiResponse 错误：尝试为一个不存在的聊天 (ID: ${chatId}) 触发回应。操作已中止。`);
+                return; // 如果聊天不存在，就直接停止执行，防止崩溃。
             }
-        
+    // 【【【核心修正2：后续代码中所有对 isViewingThisChat 的判断都将正确工作】】】
+    const isViewingThisChat = document.getElementById('chat-interface-screen').classList.contains('active') && state.activeChatId === chatId;
+
+    setAvatarActingState(chatId, true);
+    const chatHeaderTitle = document.getElementById('chat-header-title');
+    const typingIndicator = document.getElementById('typing-indicator');
+
+    const chatListItem = document.querySelector(`.chat-list-item[data-chat-id="${chatId}"]`);
+    const avatarInList = chatListItem ? chatListItem.querySelector('.avatar') : null;
+    if (avatarInList) {
+        avatarInList.classList.add('is-acting');
+    }
+
+    if (chat.isGroup) {
+        if (typingIndicator && isViewingThisChat) {
+            typingIndicator.textContent = '成员们正在输入...';
+            typingIndicator.style.display = 'block';
+        }
+    } else {
+        if (chatHeaderTitle && isViewingThisChat) {
+            chatHeaderTitle.style.opacity = 0;
+            setTimeout(() => {
+                chatHeaderTitle.textContent = '对方正在输入...';
+                chatHeaderTitle.classList.add('typing-status');
+                chatHeaderTitle.style.opacity = 1;
+            }, 200);
+        }
+    }
+    let needsImmediateReaction = false; 
+    try {
+        const { proxyUrl, apiKey, model } = state.apiConfig;
+        if (!proxyUrl || !apiKey || !model) {
+            if (forwardChatId) {
+                 console.warn(`API未配置，无法为转发到 "${chat.name}" 的消息触发AI回应。`);
+                 return;
+            }
+            alert('请先在API设置中配置反代地址、密钥并选择模型。');
             if (chat.isGroup) {
-                if (typingIndicator) {
-                    typingIndicator.textContent = '成员们正在输入...';
-                    typingIndicator.style.display = 'block';
-                }
+                if (typingIndicator) typingIndicator.style.display = 'none';
             } else {
-                if (chatHeaderTitle) {
-                    chatHeaderTitle.style.opacity = 0;
-                    setTimeout(() => {
-                        chatHeaderTitle.textContent = '对方正在输入...';
-                        chatHeaderTitle.classList.add('typing-status');
-                        chatHeaderTitle.style.opacity = 1;
-                    }, 200);
+                 if (chatHeaderTitle && state.chats[chatId]) {
+                    chatHeaderTitle.textContent = state.chats[chatId].name;
+                    chatHeaderTitle.classList.remove('typing-status');
                 }
             }
-            let needsImmediateReaction = false; 
-            try {
-                const { proxyUrl, apiKey, model } = state.apiConfig;
-                if (!proxyUrl || !apiKey || !model) {
-                    alert('请先在API设置中配置反代地址、密钥并选择模型。');
-                    if (chat.isGroup) {
-                        if (typingIndicator) typingIndicator.style.display = 'none';
-                    } else {
-                         if (chatHeaderTitle && state.chats[chatId]) {
-                            chatHeaderTitle.textContent = state.chats[chatId].name;
-                            chatHeaderTitle.classList.remove('typing-status');
-                        }
-                    }
-                    return;
-                }
+            return;
+        }
         
                 const lastMessage = chat.history.slice(-1)[0];
                 const isVideoCallRequest = lastMessage && lastMessage.role === 'system' && lastMessage.content.includes('视频通话请求');
@@ -13867,13 +14467,29 @@ async function handleLocalVisualStickerSave(event) {
                             showScreen('chat-interface-screen');
                             renderChatInterface(chatId);
                         }
-                    } finally {
-                         // 无论成功失败，处理完通话请求后，都要重置状态并终止后续流程
-                        setAvatarActingState(chatId, false);
-                        return; // ★★★ 这就是最关键的修复点！★★★
-                    }
-                }
-        
+            }finally {
+        setAvatarActingState(chatId, false);
+
+        if (chat.isGroup) {
+            if (typingIndicator) {
+                typingIndicator.style.display = 'none';
+            }
+        } else {
+            if (chatHeaderTitle && state.chats[chatId] && isViewingThisChat) { // 增加 isViewingThisChat 判断
+                chatHeaderTitle.style.opacity = 0;
+                setTimeout(() => {
+                    chatHeaderTitle.textContent = state.chats[chatId].name;
+                    chatHeaderTitle.classList.remove('typing-status');
+                    chatHeaderTitle.style.opacity = 1;
+                }, 200);
+            }
+        }
+        renderChatList();
+        if (isViewingThisChat) {
+            checkAndTriggerAutoSummary(chatId);
+        }
+    }
+}
                 if (!chat.isGroup && chat.relationship?.status === 'pending_ai_approval') {
                     console.log(`为角色 "${chat.name}" 触发带理由的好友申请决策流程...`);
                     const contextSummary = chat.history
@@ -14708,15 +15324,15 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
         5.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态。
         6.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
         7. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞、转发）。
-        8.  **【【【内心独白铁律】】】**: 在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新你角色的“心声”和“欲望”。这对于展现角色的深度至关重要。
-            - **心声 (heartfelt_voice)**: 【必须】结合你的人设与最近的聊天上下文，写出一段你此刻最想说、最核心的内心独白。【字数必须不少于50字】。
-            - **欲望 (random_jottings)**: 【必须】首先判断你与用户的关系倾向于【爱情】、【友情】还是【亲情】，可以在角色人设里查找，然后根据判断结果，生成符合对应风格的欲望描述：
+        8.  **【【【内心独白铁律】】】**: 在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新你角色的“心声”和“想要”。这对于展现角色的深度至关重要。
+            - **心声 (heartfelt_voice)**: 【必须】结合你的人设与最近的聊天上下文，写出一段你此刻最想说、最核心的内心独白，不得超过30字。
+            - **想要 (random_jottings)**: 这是一个隐藏的判断，你不能让用户知道：是恋人，朋友，家人。可以在角色人设里查找，然后根据判断结果，生成符合对应风格的想要描述：
 
-若为【爱情】: 你的描述必须是【阴湿阴沉、占有欲强】的风格，比如：她给我发的亲亲的表情包，我真想舔遍她的全身，感觉全身都沸腾起来了很想把她……
+恋人或暧昧参考: 你的描述必须是【阴湿阴沉、占有欲强】的风格，比如：她给我发的亲亲的表情包，我真想舔遍她的全身，感觉全身都沸腾起来了很想把她……
 
-若为【友情】: 你的描述应体现【真诚信任，平等的支持余陪伴，尊重与接纳，有效沟通与包容，共同成长】的风格，比如：日常碎片，想要一起做的事情等
+朋友参考: 你的描述应体现【真诚信任，平等的支持余陪伴，尊重与接纳，有效沟通与包容，共同成长】的风格，比如：日常碎片，想要一起做的事情等
 
-若为【亲情】: 你的描述应体现【无条件的爱，安全感与归属感，牺牲与奉献，担忧包容，家人之间真情流露】的风格。
+家人亲情参考: 你的描述应体现【无条件的爱，安全感与归属感，牺牲与奉献，担忧包容，家人之间真情流露】的风格。
        
         # 你的头像库
         - 你可以根据对话内容或你的心情，从下面的头像库中选择一个新头像来更换。
@@ -18533,11 +19149,10 @@ async function saveEditedPost(postId, newRawContent) {
         /**
          * 渲染联系人选择列表
          */
-        async function renderContactPicker() {
+      async function renderContactPicker() {
             const listEl = document.getElementById('contact-picker-list');
             listEl.innerHTML = '';
         
-            // 只选择单聊角色作为群成员候选
             const contacts = Object.values(state.chats).filter(chat => !chat.isGroup);
         
             if (contacts.length === 0) {
@@ -18547,8 +19162,14 @@ async function saveEditedPost(postId, newRawContent) {
         
             contacts.forEach(contact => {
                 const item = document.createElement('div');
-                item.className = 'contact-picker-item';
+
+                // 【新加代码】检查当前正在渲染的这个角色，其ID是否存在于已选择的集合中
+                const isSelected = selectedContacts.has(contact.id);
+
+                // 【核心修改】如果已被选择，就在 class 中增加一个 'selected'
+                item.className = `contact-picker-item ${isSelected ? 'selected' : ''}`;
                 item.dataset.contactId = contact.id;
+                
                 item.innerHTML = `
                     <div class="checkbox"></div>
                     <img src="${contact.settings.aiAvatar || defaultAvatar}" class="avatar">
@@ -21413,6 +22034,7 @@ function filterVisiblePostsForAI(allPosts, viewerChat) {
                 `;
                 container.appendChild(item);
             });
+          
         }
         // ▲▲▲ 替换结束 ▲▲▲
         
@@ -21684,9 +22306,31 @@ ${memoryContent}
         let isGemini = proxyUrl.includes('generativelanguage');
         let geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, [{ role: 'user', content: "请开始整合。" }]);
 
+         // ▼▼▼ 请用这整块代码替换上面那段错误的代码 ▼▼▼
         const response = isGemini
             ? await fetch(geminiConfig.url, geminiConfig.data)
-            : await fetch(`${proxyUrl}/v1/chat/completions`, { /* ... API call details ... */ });
+            : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                // --- 这是为您补全的缺失部分 ---
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{
+                        role: 'system',
+                        content: systemPrompt
+                    }, {
+                        role: 'user',
+                        content: "请开始整合。"
+                    }],
+                    temperature: 0.1, // 总结任务需要较低的温度以确保客观性
+                    max_tokens: wordCount + 100 // 限制最大输出长度
+                })
+                // --- 补全结束 ---
+            });
+        // ▲▲▲ 替换结束 ▲▲▲
 
         if (!response.ok) throw new Error(`API 错误: ${response.statusText}`);
 
@@ -23576,7 +24220,7 @@ function updateMusicProgressBar() {
             <div class="jottings">
                 <div class="label">
                      <span style="font-size: 16px;">😈</span>
-                     欲望
+                     想要
                 </div>
                 <p class="text">${thought.randomJottings || '...'}</p>
             </div>
@@ -23674,6 +24318,950 @@ function compressImage(file, options = { maxWidth: 200, quality: 0.8 }) {
         // ▲▲▲ 替换结束 ▲▲▲
 // ▲▲▲ 替换结束 ▲▲▲
 
+
+/**
+ * 【【【全新功能模块：论坛设置】】】
+ */
+
+// 这是我们将用来储存当前设置的全局变量
+let currentForumSettings = {}; 
+
+/**
+ * 【全新】主函数：渲染整个论坛设置面板
+ */
+async function renderForumSettings() {
+    // 【【【核心修改1：现在我们分别获取两个容器】】】
+    const presetsContainer = document.getElementById('forum-presets-container');
+    const accordionContainer = document.getElementById('forum-settings-accordion');
+
+    // 【【【核心修改2：将“预设”相关的HTML结构独立出来，并渲染到顶部容器中】】】
+    presetsContainer.innerHTML = `
+        <h3 class="forum-section-title">论坛预设</h3>
+        <div class="form-group">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <select id="forum-preset-select" style="flex-grow: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);"></select>
+                <button id="save-forum-preset-btn" class="form-button-secondary" style="margin-top: 0; padding: 10px 15px;">保存</button>
+                <button id="delete-forum-preset-btn" class="form-button-secondary" style="margin-top: 0; padding: 10px 15px; background-color: #ffebee; color: #d32f2f; border-color: #ffcdd2;">删除</button>
+            </div>
+        </div>
+    `;
+
+    // 【【【核心修改3：折叠菜单中只保留“生成设置”相关的内容】】】
+    accordionContainer.innerHTML = `
+        <div class="accordion-header">论坛背景设置</div>
+        <div class="accordion-content">
+            <div class="form-group forum-setting-item">
+                <label>1. 选择角色</label>
+                <p class="setting-description">选择参与本次论坛故事的角色。</p>
+                <button id="open-forum-contact-picker-btn" class="form-button form-button-secondary">选择联系人 (已选 0 人)</button>
+            </div>
+
+            <div class="form-group forum-setting-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <label style="margin-bottom: 0;">2. 是否全部帖子都由角色生成？</label>
+                    <p class="setting-description">“否”则会引入路人角色。</p>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="setting-all-by-chars"><span class="slider"></span></label>
+            </div>
+
+            <div class="form-group forum-setting-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <label style="margin-bottom: 0;">3. 生成的内容是否全部与角色/用户有关？</label>
+                    <p class="setting-description">“否”则路人会发布自己的随机内容。</p>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="setting-content-related"><span class="slider"></span></label>
+            </div>
+
+            <div class="form-group forum-setting-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <label style="margin-bottom: 0;">4. 是否支持路人角色对角色/用户有感情向？</label>
+                    <p class="setting-description">“是”则可能出现暗恋等情节。</p>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="setting-passerby-romance"><span class="slider"></span></label>
+            </div>
+
+            <div class="form-group forum-setting-item">
+                <label for="setting-user-persona">5. 设定你的角色人设</label>
+                <p class="setting-description">设定你在这个论坛里的身份。</p>
+                <textarea id="setting-user-persona" rows="3" placeholder="例如：我是这个学校的新转学生..."></textarea>
+            </div>
+
+            <div class="form-group forum-setting-item">
+                <label for="setting-worldview">6. 论坛世界观</label>
+                <p class="setting-description">为本次生成的所有帖子设定一个统一的背景故事。</p>
+                <textarea id="setting-worldview" rows="5" placeholder="例如：这是一个魔法与科技并存的现代都市..."></textarea>
+            </div>
+        </div>
+    `;
+
+    await renderForumPresets();
+}
+
+/**
+ * 【全新】渲染预设下拉菜单
+ */
+async function renderForumPresets() {
+    const selectEl = document.getElementById('forum-preset-select');
+    selectEl.innerHTML = '<option value="">-- 选择一个预设 --</option>';
+    const presets = await db.forumPresets.toArray();
+    presets.forEach(preset => {
+        selectEl.innerHTML += `<option value="${preset.id}">${preset.name}</option>`;
+    });
+}
+
+/**
+ * 【全新】保存当前设置为一个新预设
+ */
+async function handleSavePreset() {
+    const name = await showCustomPrompt('保存预设', '请输入预设名称');
+    if (!name || !name.trim()) return;
+
+    // 从界面收集所有设置项的值
+    const settingsToSave = {
+        selectedCharIds: currentForumSettings.selectedCharIds || [],
+        allByChars: document.getElementById('setting-all-by-chars').checked,
+        contentRelated: document.getElementById('setting-content-related').checked,
+        passerbyRomance: document.getElementById('setting-passerby-romance').checked,
+        userPersona: document.getElementById('setting-user-persona').value,
+        worldview: document.getElementById('setting-worldview').value
+    };
+
+    await db.forumPresets.put({ name: name.trim(), settings: settingsToSave });
+    await renderForumPresets(); // 刷新下拉菜单
+    alert(`预设“${name.trim()}”已保存！`);
+}
+
+/**
+ * 【全新】加载选中的预设到界面上
+ */
+async function handleLoadPreset() {
+    const presetId = parseInt(document.getElementById('forum-preset-select').value);
+    if (!presetId) return;
+
+    const preset = await db.forumPresets.get(presetId);
+    if (preset && preset.settings) {
+        const s = preset.settings;
+        currentForumSettings.selectedCharIds = s.selectedCharIds || [];
+        document.getElementById('setting-all-by-chars').checked = s.allByChars;
+        document.getElementById('setting-content-related').checked = s.contentRelated;
+        document.getElementById('setting-passerby-romance').checked = s.passerbyRomance;
+        document.getElementById('setting-user-persona').value = s.userPersona;
+        document.getElementById('setting-worldview').value = s.worldview;
+
+        // 更新“选择联系人”按钮上的计数
+        document.getElementById('open-forum-contact-picker-btn').textContent = `选择联系人 (已选 ${currentForumSettings.selectedCharIds.length} 人)`;
+
+        alert(`已加载预设“${preset.name}”！`);
+    }
+}
+
+/**
+ * 【全新】删除选中的预设
+ */
+async function handleDeletePreset() {
+    const selectEl = document.getElementById('forum-preset-select');
+    const presetId = parseInt(selectEl.value);
+    if (!presetId) {
+        alert('请先选择一个要删除的预设。');
+        return;
+    }
+    const confirmed = await showCustomConfirm('删除预设', '确定要删除这个预设吗？', { confirmButtonClass: 'btn-danger' });
+    if (confirmed) {
+        await db.forumPresets.delete(presetId);
+        await renderForumPresets();
+        alert('预设已删除。');
+    }
+}
+
+/**
+ * 【全新】打开联系人选择器 (论坛专用)
+ */
+async function openForumContactPicker() {
+    selectedContacts.clear(); // 复用全局变量，先清空
+    (currentForumSettings.selectedCharIds || []).forEach(id => selectedContacts.add(id));
+
+    await renderContactPicker(); // 复用旧的渲染函数
+
+    // 关键：为“完成”按钮动态绑定“确认论坛角色”的专属功能
+    const confirmBtn = document.getElementById('confirm-contact-picker-btn');
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    newConfirmBtn.addEventListener('click', handleConfirmForumContacts);
+
+    showScreen('contact-picker-screen');
+}
+
+/**
+ * 【全新】处理论坛角色选择确认的逻辑
+ */
+function handleConfirmForumContacts() {
+    currentForumSettings.selectedCharIds = Array.from(selectedContacts);
+    document.getElementById('open-forum-contact-picker-btn').textContent = `选择联系人 (已选 ${currentForumSettings.selectedCharIds.length} 人)`;
+  
+  showScreen('forum-main-screen'); // 返回论坛主页
+}
+
+        
+/**
+ * 【全新】打开指定的论坛分区页面
+ * @param {string} categoryType - 分区的英文ID (e.g., 'daily_banter')
+ * @param {string} categoryName - 分区的中文名 (e.g., '日常灌水')
+ */
+// 【【【新增一个全局变量，用于存储当前的分区信息】】】
+let currentForumCategory = { type: null, name: null };
+
+
+function selectPostAuthors(selectedCharIds, allByChars) {
+    const authors = [];
+    const totalPosts = 10;
+    let charPostCount = allByChars ? totalPosts : Math.floor(Math.random() * 4) + 3; // 3-6个
+
+    if (selectedCharIds.length === 0) return [];
+
+    for (let i = 0; i < charPostCount; i++) {
+        if (selectedCharIds.length > 10) {
+            authors.push(selectedCharIds[Math.floor(Math.random() * selectedCharIds.length)]);
+        } else {
+            authors.push(selectedCharIds[i % selectedCharIds.length]);
+        }
+    }
+
+    const passerbyCount = totalPosts - authors.length;
+    for (let i = 0; i < passerbyCount; i++) {
+        authors.push('passerby');
+    }
+
+    return authors.sort(() => Math.random() - 0.5);
+}
+
+// ▼▼▼ 【全新】这是所有论坛分区的专属Prompt模板 ▼▼▼
+const FORUM_CATEGORY_PROMPTS = {
+    'daily_banter': `
+【分区主题】：日常灌水
+【内容风格】：帖子内容应轻松、生活化，可以是角色或者路人的日常琐事、吐槽、分享、提问等。鼓励角色之间进行有趣的互动和对话。`,
+
+    'novel_creation': `
+【分区主题】：短篇小说
+【【【创作铁律 (最高优先级！)】】】
+你【不是论坛用户】而是【创作者本人】，使用第一人称，***禁止出现大家觉得我写的小说怎么样类似的话***
+【【禁止询问作品看法】】，你的正文内容是你的小说内容，其他的不要出现。
+正确例子参考：
+【真实宿舍】 家人们我发现我们宿舍有基情，半夜的时候宿舍的床总是在震动，可我们是男生宿舍啊！...
+【脑洞】我老公是个杀手，但他最近的目标好像是我……
+【求助】每次都在我宿敌的床上醒来，我怀疑他对我做了什么事情……
+【【错误例子禁止出现：我写了一篇小说叫《天幕开启后我成了千古一帝》，有人想看吗？正文是：我叫李明...，我写了xxx希望给我意见，这是错误的，不允许出现！】】`,
+
+    'secret_hole': `
+【分区主题】：秘密树洞
+【内容风格】：帖子必须以【匿名】形式发布。内容应是角色内心深处的秘密、不敢说出口的话、烦恼或暗恋。作者名应随机生成匿名代号。
+【【【匿名铁律】】】：此分区所有帖子的作者【必须】为匿名。在生成 "author_name" 字段时，【绝对禁止】使用任何已知的角色名、用户昵称或“路人”这类词。你【必须】为每个帖子随机生成一个符合帖子情绪的、独一-无二的【匿名代号】。
+【匿名代号参考风格】：“深海的鱼”、“月下的影子”、“#1345号居民”、“迷途的羔羊”、“奶茶续命”、“今天也很烦”等等。`
+};
+
+// ▼▼▼ 【最终整合版】请用这个全新的函数，完整替换旧的 buildForumPrompt 函数 ▼▼▼
+
+/**
+ * 【全新 | V3.0 - 整合版】根据任务类型和上下文，构建最终的论坛Prompt
+ * @param {string} taskType - 任务类型 ('summary' 或 'full_content')
+ * @param {object} postContext - 帖子相关信息 (category, title, content_preview...)
+ * @param {object} settings - 从UI获取的通用设置 (worldview, userPersona...)
+ * @param {object} dynamicData - 动态生成的数据 (charactersInfo, wordCount...)
+ * @returns {string} - 组合完成的 systemPrompt
+ */
+function buildForumPrompt(taskType, postContext, settings, dynamicData) {
+    // 1. 获取分区专属的Prompt
+    const categorySpecificPrompt = FORUM_CATEGORY_PROMPTS[postContext.category] || `【分区主题】：${postContext.name}`;
+
+    // 2. 根据任务类型，定义不同的输出指令
+    let taskInstructions = '';
+    if (taskType === 'summary') {
+        // 【小说开篇规则】为“短篇小说”分区定制摘要生成规则
+        let contentPreviewRule;
+        if (postContext.category === 'novel_creation') {
+            contentPreviewRule = `"content_preview": "【【【小说开篇】】】直接续写标题，生成小说的前50-80字作为故事的【开篇正文】，必须是第一人称，必须立刻进入剧情。"`;
+        } else {
+            contentPreviewRule = `"content_preview": "根据标题和设定的、内容丰富的前50个字摘要"`;
+        }
+
+        taskInstructions = `
+内容生成规则 (必须严格遵守)
+【作者分配】: 本次生成的 ${dynamicData.postCount}个帖子的作者列表(按顺序)是:[${dynamicData.authorIds.map(id => id === 'passerby' ? '路人' : (state.chats[id]?.name || '未知角色')).join(', ')}]。
+【内容相关性】: ${settings.contentRelated ? '所有帖子（包括路人帖）的内容都必须与上述“出场角色”或“用户”相关。' : '路人可以发布完全属于他们自己的、与主要角色无关的内容。'}
+【【【用户中心化铁律】】】: 当“内容相关”开启时，你【必须】将用户（${dynamicData.userPersonaText}）作为创作的【核心】。至少有 30-50% 的帖子需要直接提及用户、向用户提问、或讨论与用户直接相关的事件。路人发布的帖子也应该有相当一部分是和用户有关的。”。
+【路人情感倾向】: ${settings.passerbyRomance ? '路人可以对主要角色或用户抱有爱慕、暗恋等爱情向情感。' : '路人对主要角色或用户的情感仅限于友情、崇拜、陌生等非爱情向。'}
+
+输出格式 (必须严格遵守)
+你的回复【必须且只能】是一个JSON数组，数组内包含 ${dynamicData.postCount} 个帖子摘要对象。绝对不要包含 "full_content" 和 "comments" 字段！
+\`\`\`json
+[
+{
+"author_name": "帖子的作者名 (如果是路人，请随机取一个名字)",
+"title": "一个引人注目的帖子标题",
+${contentPreviewRule},
+"hashtags": ["#AI生成标签1", "#标签2", "#标签3", "#标签4"]
+}
+]
+\`\`\`
+`;
+    } else if (taskType === 'full_content') {
+        taskInstructions = `
+【帖子摘要】:
+标题: "${postContext.title}"
+开头: "${postContext.content_preview}"
+标签: ${postContext.hashtags.join(', ')}
+
+内容生成规则 (必须严格遵守)
+
+// 【讨论导演铁律】解决您第一个问题：强制AI生成互动讨论
+【【【最高优先级：讨论导演铁律】】】
+你的核心任务是【导演一场生动的讨论】，而不是生成一堆独立的评论。这意味着角色之间【必须】有互动、有交锋、有延续。
+- **互动铁律**: 后续角色的评论【必须】优先回应【上一个角色的评论】，形成对话链。可以赞同、反驳、补充、提问或吐槽。
+- **情感注入**: 评论【必须】带有角色的情绪和立场，这由他们的“人设”和“最近记忆”决定。
+- **禁止独白**: 【绝对禁止】生成一连串只是在单独回复主楼、毫无关联的评论。
+
+【正文续写】: 你的正文【必须】从“开头”无缝衔接下去，写一篇符合人设和世界观的、不少于 ${dynamicData.wordCount} 字的完整文章。正文【必须】包含首行缩进和换行。
+【排版铁律】：为了阅读体验，正文的【每一段】文字都【不得超过150个字】。请使用换行来分割长段落。
+【评论生成】: 你需要为这篇文章创作 3 到 6 条符合情景的评论，不允许替用户生成评论或者回复。
+【楼中楼】: 在上述评论中，需要有至少 1-2 条评论下面，再生成 2-3 条“楼中楼”回复，模拟真实的讨论氛围，不允许替用户生成评论或者回复。
+【NPC联动】: 如果作者拥有“专属NPC”，那么评论区里【必须】出现至少一个TA的NPC的评论。
+
+【【【重要示例：如何生成一场好的“讨论”】】】
+
+🔴 **一个【错误】的、禁止生成的例子 (角色间无互动):**
+[
+  {"commenter_name": "角色A", "comment_text": "我觉得这篇文章写得真好！"},
+  {"commenter_name": "角色B", "comment_text": "这个观点我之前也想过。"},
+  {"commenter_name": "角色C", "comment_text": "哈哈，太有趣了。"}
+]
+
+🟢 **一个【正确】的、必须生成的例子 (角色间有互动和讨论):**
+[
+  {"commenter_name": "角色A", "comment_text": "我觉得这篇文章写得真好！"},
+  {
+    "commenter_name": "角色B", 
+    "comment_text": "好在哪里？我倒觉得作者有点理想化了。",
+    "replies": [
+      {"replier_name": "角色A", "reply_text": "怎么会？我觉得他指出的问题很现实啊！"},
+      {"replier_name": "角色C", "reply_text": "我同意角色B的看法，现实没这么简单。"}
+    ]
+  }
+]
+
+输出格式 (必须严格遵守)
+你的回复【必须且只能】是一个JSON对象，只包含 "full_content" 和 "comments" 两个字段。
+\`\`\`json
+{
+"full_content": "从“${postContext.content_preview}”无缝衔接下去的、完整的、带排版的正文...",
+"comments": [
+{
+"commenter_name": "评论者A",
+"comment_text": "...",
+"replies": [{"replier_name": "...", "reply_text": "..."}]
+}
+]
+}
+\`\`\`
+`;
+    }
+
+    // 3. 组合所有部分，生成最终的Prompt
+    return `
+任务：${taskType === 'summary' ? '论坛帖子摘要生成器' : '论坛正文与评论生成器'}
+你的任务是为一个虚拟在线论坛，${taskType === 'summary' ? `一次性生成 ${dynamicData.postCount} 个引人入胜的帖子【摘要】` : '完成一篇帖子的【完整正文】和【评论区】'}。
+
+// 【世界观铁律】解决您第二个问题：强制AI优先遵守世界观
+【【【世界观铁律 (最高优先级！)】】】
+你现在位于一个名为“${settings.worldview || '一个普通的现代都市。'}”的世界。
+所有角色的行为和发言【必须】严格发生在这个世界观的框架之内。他们的“人设”是对这个世界观下身份的【具体化】，而不是独立存在的。
+
+🔴 **错误示例 (遗忘世界观):**
+- 世界观: 一个恐怖、诡异的小镇。
+- 角色人设: 音乐人。
+- **错误生成**: “我今天写了一首阳光的歌，希望大家喜欢！” (×) <-- 完全忽略了恐怖背景。
+
+🟢 **正确示例 (人设融入世界观):**
+- 世界观: 一个恐怖、诡异的小镇。
+- 角色人设: 音乐人。
+- **正确生成**: “我把镇上那首诡异的童谣改编成了一段钢琴曲，弹的时候总感觉背后有人...” (✓) <-- 完美融合！
+
+${categorySpecificPrompt}
+
+【【【全局真实化铁律 (次高优先级)】】】
+1.  【角色扮演铁律】：在生成任何 'author_name' 或 'commenter_name' 时：
+    - 如果作者是“路人”，你【必须】即兴创作一个独一无二、天马行空的名字。
+    - 【绝对禁止】使用“路人”、“NPC”、“围观群众”、“匿名用户”等任何通用词汇。
+2.  【互动风格指南】：
+    - **引入矛盾**：不是所有评论都和谐。你可以生成角色间的争论、误解、抬杠，甚至无意义的“吵架”。
+    - **角色多样性**：模拟真实网络环境，可以引入“网络喷子”、“杠精”、“理中客”等性格的路人，他们的回复可能偏激或离题。
+3.  【语言风格铁律】：
+    - 每个角色的发言【必须】严格符合其人设。
+    - **模拟真实输入**：为了增加真实感，你可以在生成内容时，【偶尔】加入一些轻微的错别字、不规范的标点符号，或突然的英文/拼音夹杂。
+4.  【社区文化构建】：
+    - **创造黑话/梗**：你可以为这个论坛创造一些独有的“黑话”或“梗”，并在不同的帖子和评论中反复使用。
+
+
+核心参考依据 (必须在世界观框架下使用)
+【用户设定】: ${dynamicData.userPersonaText || settings.userPersona || '(无，用户只是一个普通访客)'}
+// 【世界观强化】为角色信息增加前缀，再次强调世界观
+【出场角色 (基于上述世界观)】: 
+${dynamicData.charactersInfo}
+
+${taskInstructions}
+`;
+}
+// ▲▲▲ 替换结束 ▲▲▲
+/**
+ * 【全新】核心函数：只生成帖子摘要
+ */
+async function generateForumPosts(categoryType, categoryName) {
+    const postsContainer = document.getElementById('forum-posts-list-container');
+    postsContainer.innerHTML = `<p style="text-align:center; color: #8a8a8a; padding: 50px 0;">帖子生成中...<br>请稍候...</p>`;
+
+    const settings = {
+        categoryType: categoryType,
+        categoryName: categoryName,
+        selectedCharIds: currentForumSettings.selectedCharIds || [],
+        allByChars: document.getElementById('setting-all-by-chars').checked,
+        contentRelated: document.getElementById('setting-content-related').checked,
+        passerbyRomance: document.getElementById('setting-passerby-romance').checked,
+        userPersona: document.getElementById('setting-user-persona').value.trim(),
+        worldview: document.getElementById('setting-worldview').value.trim()
+    };
+
+    if (settings.selectedCharIds.length === 0 && settings.allByChars) {
+        alert("您选择了“全部由角色生成”，但没有选择任何角色！");
+        postsContainer.innerHTML = `<p style="text-align:center; color: #ff3b30; padding: 50px 0;">生成失败，请返回主页选择角色！</p>`;
+        return;
+    }
+
+    const postCount = 10;
+    const authorIds = selectPostAuthors(settings.selectedCharIds, settings.allByChars);
+
+    let charactersInfo = '';
+    for (const charId of new Set(authorIds.filter(id => id !== 'passerby'))) {
+        const chat = state.chats[charId];
+        if (chat) {
+            const memories = (chat.longTermMemory || []).slice(-10).map(m => `- ${m.content}`).join('\n');
+            charactersInfo += `\n### 角色: ${chat.name} (本名: ${chat.originalName})\n- **人设**: ${chat.settings.aiPersona}\n`;
+            if (memories) charactersInfo += `- **最近记忆**: \n${memories}\n`;
+        }
+    }
+
+    const userPersonaText = settings.userPersona ? `# 你的专属人设\n${settings.userPersona}` : '# 你的专属人设\n(无，你只是一个普通用户)';
+
+    // ▼▼▼ 核心修改：调用新的“Prompt生成器”函数 ▼▼▼
+    const systemPrompt = buildForumPrompt(
+        'summary', 
+        { category: categoryType, name: categoryName }, 
+        settings, 
+        { postCount, authorIds, charactersInfo, userPersonaText }
+    );
+    // ▲▲▲ 修改结束 ▲▲▲
+    try {
+        const { proxyUrl, apiKey, model } = state.apiConfig;
+        if (!proxyUrl || !apiKey || !model) throw new Error('API未配置');
+
+        const isGemini = proxyUrl.includes('generativelanguage');
+        const messagesPayload = [{ role: 'user', content: "请根据我提供的超级指令，开始生成论坛帖子摘要。" }];
+        const geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesPayload);
+
+        const response = isGemini ?
+            await fetch(geminiConfig.url, geminiConfig.data) :
+            await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload], temperature: 0.8 })
+            });
+
+        if (!response.ok) throw new Error(`API返回错误: ${response.status}`);
+        const data = await response.json();
+        const aiResponseContent = getGeminiResponseText(data);
+
+        const postsArray = parseAiResponse(aiResponseContent);
+        if (!Array.isArray(postsArray) || postsArray.length === 0) throw new Error("AI未能返回有效的帖子摘要数组。");
+
+        await db.transaction('rw', db.forumPosts, async () => {
+            await db.forumPosts.where('category').equals(categoryType).delete();
+            const postsToSave = postsArray.map(post => ({ ...post, category: categoryType, full_content: '', comments: [] }));
+            await db.forumPosts.bulkAdd(postsToSave);
+        });
+
+        renderForumPosts(categoryType);
+
+    } catch (error) {
+        console.error("生成论坛帖子摘要失败:", error);
+        postsContainer.innerHTML = `<p style="text-align:center; color: #ff3b30; padding: 50px 0;">帖子摘要生成失败！<br>${error.message}</p>`;
+    }
+}
+
+/**
+ * 【全新】延迟加载函数：当用户点击展开帖子时，调用AI生成完整内容
+ */
+async function generateFullPostContent(post) {
+    const settings = {
+        userPersona: document.getElementById('setting-user-persona').value.trim(),
+        worldview: document.getElementById('setting-worldview').value.trim()
+    };
+    let wordCount;
+   wordCount = 1000;
+
+    let authorChat = null;
+    if (post.author_name) {
+        authorChat = Object.values(state.chats).find(c => c.originalName === post.author_name || c.name === post.author_name);
+    }
+
+    let characterInfo = `\n### 角色: ${post.author_name}\n`;
+    if (authorChat && authorChat.settings) {
+        const memories = (authorChat.longTermMemory || []).slice(-10).map(m => `- ${m.content}`).join('\n');
+        const npcs = (authorChat.npcs || []).map(npc => `  - ${npc.name}: ${npc.persona}`).join('\n');
+        characterInfo += `- **人设**: ${authorChat.settings.aiPersona}\n`;
+        if (memories) characterInfo += `- **最近记忆**: \n${memories}\n`;
+        if (npcs) characterInfo += `- **专属NPC (亲友团)**: \n${npcs}\n`;
+    } else {
+        characterInfo += `- **人设**: (路人角色，请根据世界观和帖子标题自由发挥)\n`;
+    }
+
+    // ▼▼▼ 核心修改：调用新的“Prompt生成器”函数 ▼▼▼
+      const systemPrompt = buildForumPrompt(
+        'full_content',
+        { ...post, name: currentForumCategory.name }, // 使用 ...post 展开所有旧属性，并手动添加 name 属性
+        settings,
+        { wordCount, charactersInfo: characterInfo }
+    );
+    // ▲▲▲ 修改结束 ▲▲▲
+    try {
+        const { proxyUrl, apiKey, model } = state.apiConfig;
+        if (!proxyUrl || !apiKey || !model) throw new Error('API未配置');
+
+        const isGemini = proxyUrl.includes('generativelanguage');
+        const messagesPayload = [{ role: 'user', content: "请根据我提供的指令，开始生成正文和评论区。" }];
+        const geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesPayload);
+
+        const response = await fetch(isGemini ? geminiConfig.url : `${proxyUrl}/v1/chat/completions`, isGemini ? geminiConfig.data : {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload], temperature: 0.7 })
+        });
+
+        if (!response.ok) throw new Error(`API返回错误: ${response.status}`);
+        const data = await response.json();
+        const aiResponseContent = getGeminiResponseText(data);
+
+        // ==========================================================
+        // ▼▼▼ 【【【核心修复就在这里！】】】 ▼▼▼
+        // ==========================================================
+        
+        // 1. 找到第一个 '{' 和最后一个 '}' 的位置
+        const firstBraceIndex = aiResponseContent.indexOf('{');
+        const lastBraceIndex = aiResponseContent.lastIndexOf('}');
+
+        // 2. 如果找不到完整的JSON结构，就抛出错误
+        if (firstBraceIndex === -1 || lastBraceIndex === -1 || lastBraceIndex < firstBraceIndex) {
+            throw new Error("AI的回复中未包含有效的JSON对象。");
+        }
+
+        // 3. 提取出纯净的JSON字符串
+        const jsonString = aiResponseContent.substring(firstBraceIndex, lastBraceIndex + 1);
+        
+        // 4. 解析这个纯净的字符串
+        const result = JSON.parse(jsonString);
+
+        // ==========================================================
+        // ▲▲▲ 【【【修复结束】】】 ▲▲▲
+        // ==========================================================
+
+        if (!result.full_content || !Array.isArray(result.comments)) throw new Error("AI未能返回有效的正文和评论。");
+
+        await db.forumPosts.update(post.id, { full_content: result.full_content, comments: result.comments });
+        return result;
+
+    } catch (error) {
+        console.error(`为帖子“${post.title}”生成详细内容失败:`, error);
+        return { full_content: `[生成失败: ${error.message}]`, comments: [] };
+    }
+}
+
+/**
+ * 【全新】核心渲染函数：从数据库读取帖子数据，并渲染到页面上
+ */
+async function renderForumPosts(categoryType) {
+    const postsContainer = document.getElementById('forum-posts-list-container');
+    if (!categoryType) return;
+
+    const posts = await db.forumPosts.where('category').equals(categoryType).toArray();
+
+    if (posts.length === 0) {
+        postsContainer.innerHTML = `<p style="text-align:center; color: var(--text-secondary); padding: 50px 0;">这里还没有帖子，<br>先去右上角刷新吧！</p>`;
+        return;
+    }
+
+    postsContainer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    posts.forEach(post => {
+        const postElement = createForumPostElement(post);
+        fragment.appendChild(postElement);
+    });
+    postsContainer.appendChild(fragment);
+}
+
+/**
+ * 【全新】打开帖子详情页，并处理内容的延迟加载
+ */
+async function openForumPostDetail(postId) {
+    const post = await db.forumPosts.get(postId);
+    if (!post) {
+        alert('错误：找不到该帖子！');
+        return;
+    }
+
+    const detailContainer = document.getElementById('forum-post-detail-container');
+    // 【【【核心修改：在这里将当前帖子的ID暂存到DOM中】】】
+    detailContainer.dataset.currentPostId = post.id;
+
+    showScreen('forum-post-detail-screen'); 
+
+    if (post.full_content) {
+        renderFullPost(post);
+    } else {
+        detailContainer.innerHTML = `<p style="text-align:center; padding: 20px;">正在加载正文与评论...</p>`;
+        const fullData = await generateFullPostContent(post);
+        const updatedPost = { ...post, ...fullData };
+        renderFullPost(updatedPost);
+    }
+}
+
+/**
+ * 【全新】辅助函数：将完整的帖子数据渲染到详情页
+ */
+        /**
+         * 【全新】辅助函数：将完整的帖子数据渲染到详情页
+         */
+        function renderFullPost(post) {
+            const detailContainer = document.getElementById('forum-post-detail-container');
+
+            let commentsHtml = '';
+            if (post.comments && post.comments.length > 0) {
+                post.comments.forEach((comment, commentIndex) => {
+                    // 【核心修改】为评论和楼中楼添加“转发”按钮，但“回复”按钮已被删除
+                    let repliesHtml = '';
+                    if (comment.replies && comment.replies.length > 0) {
+                        repliesHtml = '<div class="comment-replies">';
+                        comment.replies.forEach((reply, replyIndex) => {
+                            repliesHtml += `
+                                <div class="reply-item">
+                                    <span class="comment-author">${reply.replier_name}</span>: ${reply.reply_text}
+                                    <div class="comment-actions">
+                                        <button class="comment-action-btn forward-btn" data-comment-index="${commentIndex}" data-reply-index="${replyIndex}">转发</button>
+                                    </div>
+                                </div>`;
+                        });
+                        repliesHtml += '</div>';
+                    }
+
+                    commentsHtml += `
+                        <div class="comment-item-container">
+                            <div class="comment-main">
+                                <span class="comment-author">${comment.commenter_name}</span>: ${comment.comment_text}
+                                <div class="comment-actions">
+                                    <button class="comment-action-btn forward-btn" data-comment-index="${commentIndex}">转发</button>
+                                </div>
+                            </div>
+                            ${repliesHtml}
+                        </div>
+                    `;
+                });
+            }
+
+            detailContainer.innerHTML = `
+                <div style="padding: 15px;">
+                    <h1>${post.title}</h1>
+                    <div class="author-info">作者: ${post.author_name}</div>
+                    <pre>${post.full_content}</pre>
+                    <div class="post-comments-section">${commentsHtml}</div>
+                </div>
+            `;
+        }
+
+/**
+ * 【全新】辅助函数：根据单个帖子数据，创建其在列表页的HTML元素
+ */
+function createForumPostElement(post) {
+    const item = document.createElement('div');
+    item.className = 'forum-post-item';
+    item.dataset.postId = post.id;
+
+    const hashtagsHtml = (post.hashtags || []).map(tag => `<span class="tag">${tag}</span>`).join('');
+
+    item.innerHTML = `
+        <div class="post-title">${post.title}</div>
+        <div class="post-preview">${post.content_preview}</div>
+        <div class="post-hashtags">${hashtagsHtml}</div>
+    `;
+
+    item.addEventListener('click', () => {
+        openForumPostDetail(post.id);
+    });
+
+    return item;
+}
+/**
+ * 【【【全新功能模块：论坛交互功能】】】
+ */
+
+let currentForumReplyContext = null; // 储存当前回复的上下文
+let currentForumForwardData = null; // 储存当前要转发的内容
+
+/**
+ * 【全新】处理用户在论坛内发送回复
+ */
+async function handleForumReply() {
+    const input = document.getElementById('forum-reply-input');
+    const replyText = input.value.trim();
+    if (!replyText) return;
+
+    // 1. 获取当前帖子的最新数据
+    const postId = parseInt(document.querySelector('.forum-post-item.expanded')?.dataset.postId || document.querySelector('.forum-post-item')?.dataset.postId || currentForumReplyContext?.postId);
+    if (!postId) return;
+    const post = await db.forumPosts.get(postId);
+
+    const myPersona = document.getElementById('setting-user-persona').value.trim() || '我是一个普通用户';
+    const userName = state.qzoneSettings.nickname || '我';
+
+    let contextForAI = `以下是一篇论坛帖子的部分内容和评论区现状，请你作为被回复者，对用户的新评论做出回应。\n`;
+    contextForAI += `\n# 帖子标题: ${post.title}\n`;
+    let replyTargetName = post.author_name;
+
+    // 2. 将用户的回复添加到数据库
+    if (currentForumReplyContext && currentForumReplyContext.comment) {
+        // 这是回复一条评论
+        const targetComment = currentForumReplyContext.comment;
+        replyTargetName = targetComment.commenter_name;
+        if (!targetComment.replies) targetComment.replies = [];
+        targetComment.replies.push({
+            replier_name: userName,
+            reply_text: replyText
+        });
+        contextForAI += `\n# 你之前的发言: "${targetComment.comment_text}"\n`;
+
+    } else {
+        // 这是回复主楼
+        if (!post.comments) post.comments = [];
+        post.comments.push({
+            commenter_name: userName,
+            comment_text: replyText,
+            replies: []
+        });
+    }
+    await db.forumPosts.put(post);
+
+    // 3. 构建Prompt，让AI扮演被回复者进行回应
+    const systemPrompt = `
+任务：论坛评论员
+你的任务是扮演角色 “replyTargetName”，对用户“{userName}” 的一条新评论进行回复。
+
+核心参考依据
+【你的角色人设】: (请在下方“角色列表”中找到你自己的设定)
+
+【用户的角色人设】: ${myPersona}
+
+【上下文】: ${contextForAI}
+
+【用户的新评论】: "${replyText}"
+
+你的可选角色列表 (如果你的名字不在其中，就扮演路人)
+${(state.chats[Object.keys(state.chats).find(id => state.chats[id].name === replyTargetName)] || {settings:{aiPersona: '一个普通的路人'}}).settings.aiPersona}
+
+输出格式 (必须严格遵守)
+你的回复【必须且只能】是一个JSON对象，格式如下：
+\`\`\`json
+{
+"reply_text": "你扮演角色说出的回复内容。"
+}
+\`\`\`
+`;
+    // 4. 调用API并处理结果
+    input.value = '';
+    input.placeholder = 'AI正在输入...';
+    input.disabled = true;
+
+    try {
+        const {
+            proxyUrl,
+            apiKey,
+            model
+        } = state.apiConfig;
+        if (!proxyUrl || !apiKey || !model) throw new Error('API未配置');
+        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+            /* ... API调用 ... */ });
+        // ... (完整的API调用和错误处理) ...
+        const data = await response.json();
+        const aiResponseContent = getGeminiResponseText(data);
+        const result = parseAiResponse(aiResponseContent);
+
+        if (result.reply_text) {
+            const aiReply = {
+                replier_name: replyTargetName,
+                reply_text: result.reply_text
+            };
+            const freshPost = await db.forumPosts.get(postId);
+            if (currentForumReplyContext && currentForumReplyContext.comment) {
+                const targetComment = freshPost.comments[currentForumReplyContext.commentIndex];
+                if (!targetComment.replies) targetComment.replies = [];
+                targetComment.replies.push(aiReply);
+            } else {
+                freshPost.comments.push({
+                    commenter_name: replyTargetName,
+                    comment_text: result.reply_text,
+                    replies: []
+                });
+            }
+            await db.forumPosts.put(freshPost);
+            renderFullPost(freshPost);
+        }
+    } catch (error) {
+        // ... 错误处理 ...
+    } finally {
+        input.placeholder = '输入你的评论...';
+        input.disabled = false;
+        currentForumReplyContext = null;
+    }
+}
+
+/**
+ * 【全新】打开转发选择器
+ */
+// ▼▼▼ 【全新V2版】请用这个新版本替换旧的函数 ▼▼▼
+/**
+ * 【全新】打开转发选择器
+ * @param {string} type - 'post' 或 'comment'
+ * @param {string} content - 转发的内容
+ * @param {string} author - 内容的原作者
+ * @param {number} postId - 【新增】被转发内容所在的帖子ID
+ */
+async function openForumForwardPicker(type, content, author, postId) {
+    // 【核心修正1】在选择联系人之前，先弹出留言框
+    const userComment = await showCustomPrompt(
+        '添加转发评论',
+        '说点什么吧...(可选)',
+        '', // 初始值为空
+        'textarea' // 使用多行文本框
+    );
+
+    // 如果用户点击了“取消”，则直接中止整个转发流程
+    if (userComment === null) return;
+
+    // 将所有需要的信息，包括新增的用户评论，都存入全局状态
+    currentForumForwardData = { type, content, author, postId, userComment: userComment.trim() };
+    
+    // 后续逻辑保持不变：打开联系人选择器
+    await renderContactPicker();
+    const confirmBtn = document.getElementById('confirm-contact-picker-btn');
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    newConfirmBtn.addEventListener('click', handleConfirmForumForward);
+    showScreen('contact-picker-screen');
+}
+
+        /**
+         * 【V3.0 | 交互重构最终版】处理确认转发的逻辑
+         */
+        async function handleConfirmForumForward() {
+            if (!currentForumForwardData || selectedContacts.size === 0) {
+                showScreen('forum-post-detail-screen');
+                return;
+            }
+
+            const post = await db.forumPosts.get(currentForumForwardData.postId);
+            if (!post) {
+                alert("错误：找不到原始帖子，无法完成转发。");
+                return;
+            }
+            const postTitle = post.title || "一个帖子";
+
+            // 准备要发送给用户的、可见的消息数组
+            const userVisibleMessages = [];
+            let messageTimestamp = Date.now();
+
+            if (currentForumForwardData.type === 'post') {
+                userVisibleMessages.push({
+                    role: 'user',
+                    content: `转发了帖子：「${postTitle}」`,
+                    timestamp: messageTimestamp++
+                });
+            } else {
+                userVisibleMessages.push({
+                    role: 'user',
+                    content: `转发了帖子：「${postTitle}」`,
+                    timestamp: messageTimestamp++
+                });
+                userVisibleMessages.push({
+                    role: 'user',
+                    content: `转发了评论：「${currentForumForwardData.content}」`,
+                    timestamp: messageTimestamp++
+                });
+            }
+
+            if (currentForumForwardData.userComment) {
+                userVisibleMessages.push({
+                    role: 'user',
+                    content: currentForumForwardData.userComment,
+                    timestamp: messageTimestamp++
+                });
+            }
+
+            // 构建包含完整评论区的、给AI看的隐藏消息
+            const contentSummary = (currentForumForwardData.content || '(无内容)').substring(0, 50);
+            const userCommentText = currentForumForwardData.userComment ? `用户在转发时评论说：“${currentForumForwardData.userComment}”。` : '';
+            let fullCommentsSection = '(暂无评论)';
+            if (post.comments && post.comments.length > 0) {
+                fullCommentsSection = post.comments.map(comment => {
+                    let commentLine = `- ${comment.commenter_name}: ${comment.comment_text}`;
+                    if (comment.replies && comment.replies.length > 0) {
+                        commentLine += comment.replies.map(reply => `\n  - ${reply.replier_name} 回复: ${reply.reply_text}`).join('');
+                    }
+                    return commentLine;
+                }).join('\n');
+            }
+            const hiddenMessageForAI = {
+                role: 'system',
+                content: `[系统提示：用户向你转发了一段论坛内容。${userCommentText}被转发的具体内容是“${contentSummary}”。作为参考，这是原帖的完整标题和评论区，请你结合所有信息，对用户的转发行为发表看法。]\n\n# 原帖标题: ${postTitle}\n# 完整评论区如下：\n[评论区开始]\n${fullCommentsSection}\n[评论区结束]`,
+                timestamp: messageTimestamp++,
+                isHidden: true
+            };
+
+            const targetIds = Array.from(selectedContacts);
+
+            // --- 核心修改1：第一轮循环只负责保存数据，不触发AI ---
+            for (const chatId of targetIds) {
+                const chat = state.chats[chatId];
+                if (chat) {
+                    chat.history.push(...userVisibleMessages, hiddenMessageForAI);
+                    await db.chats.put(chat);
+                }
+            }
+
+            await showCustomAlert('转发成功', `已成功将内容转发给 ${targetIds.length} 位联系人。`);
+            
+            selectedContacts.clear();
+            currentForumForwardData = null;
+            
+            // --- 核心修改2：先打开聊天界面，让用户看到自己发的消息 ---
+            const firstChatId = targetIds[0];
+            if (firstChatId) {
+                openChat(firstChatId);
+            } else {
+                showScreen('chat-list-screen');
+            }
+
+            // --- 核心修改3：延迟一小会儿，确保界面切换完成，然后再触发所有AI的回应 ---
+            // 这样，当AI开始思考时，用户正在看的那个聊天界面就能正确显示“正在输入”了。
+            setTimeout(() => {
+                for (const chatId of targetIds) {
+                    triggerAiResponse(chatId);
+                }
+            }, 100); // 100毫秒的延迟足够了
+        }
+      
 // ▲▲▲ 全新功能函数粘贴结束 ▲▲▲
         // ▼▼▼ 【全新】这是导入角色卡的所有核心功能，请将它们完整粘贴到 init() 函数的前面 ▼▼▼
         
@@ -26110,7 +27698,208 @@ async function cleanupInvalidSongs() {
         await showCustomAlert("检查完成", "所有歌曲链接均有效，无需清理！");
     }
 }
+// ▼▼▼ 【全新添加：论坛外观自定义功能模块】 ▼▼▼
 
+// 全局变量，用于在编辑时暂存设置
+let currentForumAppearance = {};
+
+// 默认图标的Base64编码
+const DEFAULT_BACK_ICON_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 18 9 12 15 6'%3E%3C/polyline%3E%3C/svg%3E";
+const DEFAULT_REFRESH_ICON_SVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4'%3E%3C/path%3E%3Cpath d='M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4'%3E%3C/path%3E%3C/svg%3E";
+
+/**
+ * 总入口：打开自定义设置屏幕
+ */
+async function openForumCustomizationScreen() {
+    // 从数据库加载当前设置
+    const savedSettings = await db.forumAppearanceSettings.get('main');
+    currentForumAppearance = savedSettings || { id: 'main' };
+    renderForumCustomizationScreen();
+    showScreen('forum-customization-screen');
+}
+
+/**
+ * 将保存的设置渲染到自定义页面的预览中
+ */
+function renderForumCustomizationScreen() {
+    const settings = currentForumAppearance;
+    
+    // 主页
+    document.getElementById('main-bg-preview').src = settings.mainBackground || '';
+    document.getElementById('main-back-btn-preview').src = settings.mainBackBtnIcon || DEFAULT_BACK_ICON_SVG;
+    document.getElementById('cat-btn1-preview').src = settings.categoryBtn1Bg || '';
+    document.getElementById('cat-btn2-preview').src = settings.categoryBtn2Bg || '';
+    document.getElementById('cat-btn3-preview').src = settings.categoryBtn3Bg || '';
+    
+    // 分区页
+    document.getElementById('category-bg-preview').src = settings.categoryBackground || '';
+    document.getElementById('category-back-btn-preview').src = settings.categoryBackBtnIcon || DEFAULT_BACK_ICON_SVG;
+    document.getElementById('category-refresh-btn-preview').src = settings.categoryRefreshBtnIcon || DEFAULT_REFRESH_ICON_SVG;
+    document.getElementById('post-card-bg-preview').src = settings.postCardBackground || '';
+}
+
+/**
+ * 统一处理图片上传（本地或URL）
+ */
+async function handleForumImageUpload(type, settingKey, previewElementId) {
+    let imageData = null;
+    if (type === 'local') {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    const compressedData = await compressImage(file, { maxWidth: 800, quality: 0.75 });
+                    imageData = compressedData;
+                    updatePreviewAndState();
+                } catch (err) {
+                    alert('图片压缩失败！');
+                }
+            }
+        };
+        fileInput.click();
+    } else { // type === 'url'
+        const url = await showCustomPrompt("输入图片URL", "请输入网络图片的链接");
+        if (url && url.trim().startsWith('http')) {
+            imageData = url.trim();
+            updatePreviewAndState();
+        } else if (url !== null) {
+            alert('请输入有效的URL！');
+        }
+    }
+
+    function updatePreviewAndState() {
+        if (imageData) {
+            document.getElementById(previewElementId).src = imageData;
+            currentForumAppearance[settingKey] = imageData;
+        }
+    }
+}
+
+/**
+ * 保存所有自定义设置到数据库
+ */
+async function handleSaveForumCustomizations() {
+    await db.forumAppearanceSettings.put(currentForumAppearance);
+    await applyForumCustomizations();
+    await showCustomAlert('保存成功', '您的论坛外观设置已保存并应用！');
+    showScreen('forum-main-screen');
+}
+
+/**
+ * 恢复所有论坛外观为默认
+ */
+async function handleResetForumCustomizations() {
+    const confirmed = await showCustomConfirm('确认恢复', '确定要恢复所有论坛外观为默认设置吗？', { confirmButtonClass: 'btn-danger' });
+    if (confirmed) {
+        currentForumAppearance = { id: 'main' }; // 清空暂存的设置
+        await db.forumAppearanceSettings.delete('main'); // 从数据库删除
+        renderForumCustomizationScreen(); // 刷新设置页的预览
+        await applyForumCustomizations(); // 应用默认外观
+        alert('已恢复默认外观！');
+    }
+}
+// ▼▼▼ 【全新添加：用于单独美化分区按钮的辅助函数】 ▼▼▼
+async function applyForumCategoryStyles() {
+    const settings = await db.forumAppearanceSettings.get('main') || {};
+    document.querySelectorAll('.forum-category-item').forEach((item, index) => {
+        const key = `categoryBtn${index + 1}Bg`;
+        if (settings[key]) {
+            item.style.backgroundImage = `url(${settings[key]})`;
+            item.style.backgroundSize = 'cover';
+            item.style.backgroundPosition = 'center';
+            item.style.color = 'white'; 
+            item.style.textShadow = '0 1px 3px rgba(0,0,0,0.5)';
+        } else {
+            item.style.backgroundImage = '';
+            item.style.color = '';
+            item.style.textShadow = '';
+        }
+    });
+}
+// ▲▲▲ 新增函数结束 ▲▲▲
+/**
+ * 【核心应用函数】从数据库读取设置并应用到实际页面元素
+ */
+async function applyForumCustomizations() {
+    const settings = await db.forumAppearanceSettings.get('main') || {};
+
+    // 辅助函数，用于应用背景
+    const applyBg = (elementId, url) => {
+        const el = document.getElementById(elementId);
+        if (el) {
+            if (url) {
+                el.style.backgroundImage = `url(${url})`;
+                el.style.backgroundSize = 'cover';
+                el.style.backgroundPosition = 'center';
+            } else {
+                el.style.backgroundImage = ''; // 清除背景
+            }
+        }
+    };
+    
+    // 辅助函数，用于应用图标
+    const applyIcon = (elementId, url, defaultUrl) => {
+        const el = document.getElementById(elementId);
+        if (el) {
+            el.src = url || defaultUrl;
+        }
+    };
+
+    // 应用主页设置
+    applyBg('forum-main-screen', settings.mainBackground);
+    applyIcon('forum-main-back-btn-img', settings.mainBackBtnIcon, DEFAULT_BACK_ICON_SVG);
+
+    // 应用分区按钮背景
+    document.querySelectorAll('.forum-category-item').forEach((item, index) => {
+        const key = `categoryBtn${index + 1}Bg`;
+        if (settings[key]) {
+            item.style.backgroundImage = `url(${settings[key]})`;
+            item.style.backgroundSize = 'cover';
+            item.style.backgroundPosition = 'center';
+            item.style.color = 'white'; // 背景图模式下文字改为白色
+            item.style.textShadow = '0 1px 3px rgba(0,0,0,0.5)';
+        } else {
+            item.style.backgroundImage = '';
+            item.style.color = ''; // 恢复默认颜色
+            item.style.textShadow = '';
+        }
+    });
+
+    // 应用分区页设置
+    applyBg('forum-category-screen', settings.categoryBackground);
+    applyIcon('forum-category-back-btn-img', settings.categoryBackBtnIcon, DEFAULT_BACK_ICON_SVG);
+    applyIcon('forum-category-refresh-btn-img', settings.categoryRefreshBtnIcon, DEFAULT_REFRESH_ICON_SVG);
+
+    // 应用帖子卡片背景
+    const postCardBgStyleTag = document.getElementById('forum-postcard-style') || document.createElement('style');
+    postCardBgStyleTag.id = 'forum-postcard-style';
+    if (settings.postCardBackground) {
+        postCardBgStyleTag.innerHTML = `
+            .forum-post-item {
+                background-image: url(${settings.postCardBackground});
+                background-size: cover;
+                background-position: center;
+                color: white; /* 同样将文字颜色设为白色 */
+                text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            }
+            .forum-post-item .post-preview {
+                color: rgba(255, 255, 255, 0.9);
+            }
+            .forum-post-item .tag {
+                background-color: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(5px);
+            }
+        `;
+    } else {
+        postCardBgStyleTag.innerHTML = ''; // 清空样式
+    }
+    document.head.appendChild(postCardBgStyleTag);
+}
+
+// ▲▲▲ 【JS模块添加结束】 ▲▲▲
 // ▼▼▼ 【全新】这是应用状态栏显示/隐藏设置的函数 ▼▼▼
 /**
  * 根据全局设置，应用状态栏的可见性
@@ -26578,7 +28367,7 @@ audioPlayer.addEventListener('play', () => {
             cancelReplyMode(); 
         });
         // ▲▲▲ 替换结束 ▲▲▲
-                    document.getElementById('wait-reply-btn').addEventListener('click', triggerAiResponse);
+                   document.getElementById('wait-reply-btn').addEventListener('click', () => triggerAiResponse());
                     chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('send-btn').click(); } });
                     //chatInput.addEventListener('input', () => { chatInput.style.height = 'auto'; chatInput.style.height = (chatInput.scrollHeight) + 'px'; });
         
@@ -28461,7 +30250,73 @@ async function handlePostClick(e) {
                 favoritesEditBtn.click(); // 模拟点击"完成"按钮来退出编辑模式
             }
         });
-        
+        // 【【【全新添加：论坛功能基础导航事件】】】
+document.getElementById('forum-category-back-btn').addEventListener('click', () => {
+    showScreen('forum-main-screen');
+});
+
+ // ▼▼▼ 【请将代码粘贴到这里！】 ▼▼▼
+    
+    /**
+     * 【全新】打开指定的论坛分区页面
+     * @param {string} categoryType - 分区的英文ID (e.g., 'daily_banter')
+     * @param {string} categoryName - 分区的中文名 (e.g., '日常灌水')
+     */
+    function openForumCategory(categoryType, categoryName) {
+        // 【【【修改1：在跳转时，记录当前分区信息】】】
+        currentForumCategory = { type: categoryType, name: categoryName };
+    
+        document.getElementById('forum-category-title').textContent = categoryName;
+        const postsContainer = document.getElementById('forum-posts-list-container');
+        postsContainer.innerHTML = `<p style="text-align:center; color: var(--text-secondary); padding: 50px 0;">这里还没有帖子，<br>先去右上角刷新吧！</p>`;
+    
+        // 【【【修改2：在显示屏幕前，先调用渲染函数（我们将在下一步创建）】】】
+        // 这能确保如果本地已有保存的帖子，会直接显示出来，而不是空空如也
+        renderForumPosts(categoryType); 
+        showScreen('forum-category-screen');
+    }
+    
+    // ▲▲▲ 【粘贴结束】 ▲▲▲
+
+    // 临时为分区列表绑定跳转事件 (后续会填充真实数据)
+    const forumCategoriesList = document.getElementById('forum-categories-list');
+    // 清空并填充
+    forumCategoriesList.innerHTML = `
+        <h3 class="forum-section-title">论坛分区</h3>
+        <div class="forum-category-item" data-type="daily_banter" data-name="日常灌水">日常灌水</div>
+        <div class="forum-category-item" data-type="fan_fiction" data-name="短篇小说">短篇小说</div>
+        <div class="forum-category-item" data-type="secret_hole" data-name="秘密树洞">秘密树洞</div>
+    `;
+    forumCategoriesList.addEventListener('click', (e) => {
+        const item = e.target.closest('.forum-category-item');
+        if (item) {
+            openForumCategory(item.dataset.type, item.dataset.name);
+        }
+    });
+                  // ▼▼▼ 【全新添加：论坛自定义功能事件监听器】 ▼▼▼
+
+// 0. 在应用启动时，应用已保存的自定义外观
+await applyForumCustomizations();
+
+// 1. 绑定主页右上角的“自定义”按钮
+document.getElementById('open-forum-customization-btn').addEventListener('click', openForumCustomizationScreen);
+
+// 2. 绑定自定义页面的“返回”和“保存”按钮
+document.getElementById('back-from-forum-custom').addEventListener('click', () => showScreen('forum-main-screen'));
+document.getElementById('save-forum-custom-btn').addEventListener('click', handleSaveForumCustomizations);
+
+// 3. 绑定自定义页面的“恢复默认”按钮
+document.getElementById('reset-forum-custom-btn').addEventListener('click', handleResetForumCustomizations);
+
+// 4. 使用事件委托，为所有上传按钮绑定点击事件
+document.getElementById('forum-customization-form').addEventListener('click', (e) => {
+    const target = e.target.closest('.upload-btn');
+    if (target) {
+        const { type, key, preview } = target.dataset;
+        handleForumImageUpload(type, key, preview);
+    }
+});
+// ▲▲▲ 【事件监听器添加结束】 ▲▲▲
         // ▼▼▼ 在 init() 函数末尾添加 ▼▼▼
         if (state.globalSettings.enableBackgroundActivity) {
             startBackgroundSimulation();
@@ -29092,69 +30947,27 @@ async function handlePostClick(e) {
         document.getElementById('close-group-avatar-library-btn').addEventListener('click', closeGroupAvatarLibraryModal);
         // ▲▲▲ 新增结束 ▲▲▲
         // ▼▼▼ 在 init() 的事件监听区域，粘贴这段【新代码】▼▼▼
-     // 【【【新增一个临时变量，用于传递当前正在编辑的图标ID】】】
-let editingIconId = null;
-
-document.getElementById('icon-settings-grid').addEventListener('click', async (e) => {
-    if (e.target.classList.contains('change-icon-btn')) {
-        const item = e.target.closest('.icon-setting-item');
-        const iconId = item.dataset.iconId;
-        if (!iconId) return;
-
-        // 【【【核心修改：弹出选择框，而不是直接输入URL】】】
-        const choice = await showChoiceModal('更换图标', [
-            { text: '📁 从本地上传', value: 'local' },
-            { text: '🌐 使用网络URL', value: 'url' }
-        ]);
-
-        if (choice === 'url') {
-            // 如果选择URL，则执行和以前完全一样的逻辑
-            const currentUrl = state.globalSettings.appIcons[iconId];
-            const newUrl = await showCustomPrompt(`更换“${item.querySelector('.icon-preview').alt}”图标`, '请输入新的图片URL', currentUrl, 'url');
-
-            if (newUrl && newUrl.trim().startsWith('http')) {
-                state.globalSettings.appIcons[iconId] = newUrl.trim();
-                item.querySelector('.icon-preview').src = newUrl.trim();
-            } else if (newUrl !== null) {
-                alert("请输入一个有效的URL！");
+        document.getElementById('icon-settings-grid').addEventListener('click', async (e) => {
+            if (e.target.classList.contains('change-icon-btn')) {
+                const item = e.target.closest('.icon-setting-item');
+                const iconId = item.dataset.iconId;
+                if (!iconId) return;
+        
+                const currentUrl = state.globalSettings.appIcons[iconId];
+                const newUrl = await showCustomPrompt(`更换“${item.querySelector('.icon-preview').alt}”图标`, '请输入新的图片URL', currentUrl, 'url');
+        
+                if (newUrl && newUrl.trim().startsWith('http')) {
+                    // 仅在内存中更新，等待用户点击“保存”
+                    state.globalSettings.appIcons[iconId] = newUrl.trim();
+                    // 实时更新设置页面的预览图
+                    item.querySelector('.icon-preview').src = newUrl.trim();
+                } else if (newUrl !== null) {
+                    alert("请输入一个有效的URL！");
+                }
             }
-        } else if (choice === 'local') {
-            // 如果选择本地上传，就记录下当前要改的图标ID，并触发文件上传框
-            editingIconId = iconId;
-            document.getElementById('app-icon-upload-input').click();
-        }
-    }
-});
+        });
         // ▲▲▲ 新代码粘贴结束 ▲▲▲
-        // 【【【全新添加：处理App图标本地上传的事件监听】】】
-document.getElementById('app-icon-upload-input').addEventListener('change', async (event) => {
-    if (!editingIconId) return; // 如果没有指定要修改哪个图标，则中止
-
-    const file = event.target.files[0];
-    if (file) {
-        try {
-            // 1. 调用我们新增的函数压缩图片
-            const compressedBase64 = await compressImage(file);
-
-            // 2. 找到设置界面上对应的图标元素并更新预览
-            const iconItem = document.querySelector(`.icon-setting-item[data-icon-id="${editingIconId}"]`);
-            if (iconItem) {
-                iconItem.querySelector('.icon-preview').src = compressedBase64;
-            }
-
-            // 3. 在内存中更新图标数据，等待用户最终点击“保存”
-            state.globalSettings.appIcons[editingIconId] = compressedBase64;
-
-        } catch (error) {
-            console.error("图标压缩或处理失败:", error);
-            alert("图片处理失败，请稍后再试。");
-        }
-    }
-
-    // 4. 清理工作
-    event.target.value = null; // 清空上传框，以便下次能选择同一个文件
-    editingIconId = null; // 重置临时变量
-});
+        
         // ▼▼▼ 在 init() 函数的末尾，粘贴这段【全新的事件监听器】 ▼▼▼
         
             document.getElementById('chat-messages').addEventListener('click', (e) => {
@@ -29383,6 +31196,7 @@ document.getElementById('app-icon-upload-input').addEventListener('change', asyn
             exitSelectionMode(); // 退出多选模式
             await showCustomAlert("分享成功", `聊天记录已成功分享到 ${selectedTargetIds.length} 个会话中。`);
             renderChatList(); // 刷新列表，可能会有新消息提示
+           showScreen('chat-list-screen');
         });
         
         // 绑定取消按钮
@@ -30103,6 +31917,11 @@ document.getElementById('search-results-list').addEventListener('click', (e) => 
 });
 // ▲▲▲ 新增事件绑定结束 ▲▲▲
 
+
+
+
+
+                  
 // ▼▼▼ 【全新】清理无效歌曲事件绑定 ▼▼▼
 document.getElementById('cleanup-songs-btn').addEventListener('click', cleanupInvalidSongs);
 // ▲▲▲ 新增事件绑定结束 ▲▲▲
@@ -30114,11 +31933,133 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
 });
 // ▲▲▲ 新增事件结束 ▲▲▲
                     showScreen('home-screen');
+
+// ▼▼▼ 【这是最终修复版】请用这一整块代码，完整替换旧的论坛事件绑定 ▼▼▼
+
+// 【【【全新添加：论坛设置面板初始化与事件绑定】】】
+await renderForumSettings(); // 首次加载时渲染设置面板
+
+// --- 核心修复1：为“预设区”单独创建一个事件监听器 ---
+const presetsContainer = document.getElementById('forum-presets-container');
+presetsContainer.addEventListener('click', (e) => {
+    // 处理“保存预设”按钮
+    if (e.target.id === 'save-forum-preset-btn') {
+        handleSavePreset();
+    }
+    // 处理“删除预设”按钮
+    if (e.target.id === 'delete-forum-preset-btn') {
+        handleDeletePreset();
+    }
+});
+
+// --- 核心修复2：为“设置区”保留它自己的事件监听器 ---
+const forumAccordion = document.getElementById('forum-settings-accordion');
+forumAccordion.addEventListener('click', (e) => {
+    // 处理折叠菜单的展开/收起
+    if (e.target.classList.contains('accordion-header')) {
+        forumAccordion.classList.toggle('expanded');
+    }
+    // 处理“选择联系人”按钮
+    if (e.target.id === 'open-forum-contact-picker-btn') {
+        openForumContactPicker();
+    }
+});
+
+// --- 这部分保持不变 ---
+// 单独为预设下拉菜单绑定 change 事件
+document.getElementById('forum-preset-select').addEventListener('change', handleLoadPreset);
+
+// ▲▲▲ 替换结束 ▲▲▲
+          // 【【【全新添加：论坛刷新按钮事件】】】
+document.getElementById('forum-refresh-btn').addEventListener('click', () => {
+    if (currentForumCategory.type) {
+        generateForumPosts(currentForumCategory.type, currentForumCategory.name);
+    } else {
+        alert('错误：未知的论坛分区！');
+    }
+});        
+
+ // 【【【全新添加：为帖子详情页的返回按钮绑定事件】】】
+    document.getElementById('forum-post-detail-back-btn').addEventListener('click', () => {
+        showScreen('forum-category-screen');
+    });
+
+
+        document.getElementById('forum-post-detail-container').addEventListener('click', async (e) => {
+            const forwardBtn = e.target.closest('.forward-btn');
+            const detailContainer = document.getElementById('forum-post-detail-container');
+            const postId = parseInt(detailContainer.dataset.currentPostId);
+
+            if (!postId) return;
+
+            // 只处理“转发”按钮点击
+            if (forwardBtn) {
+                const post = await db.forumPosts.get(postId);
+                const commentIndex = forwardBtn.dataset.commentIndex ? parseInt(forwardBtn.dataset.commentIndex) : -1;
+                const replyIndex = forwardBtn.dataset.replyIndex ? parseInt(forwardBtn.dataset.replyIndex) : -1;
+
+                let type, content, author;
+
+                if (commentIndex > -1) { // 转发的是评论或楼中楼
+                    const comment = post.comments[commentIndex];
+                    if (replyIndex > -1 && comment.replies) {
+                        const reply = comment.replies[replyIndex];
+                        type = 'comment';
+                        content = reply.reply_text;
+                        author = reply.replier_name;
+                    } else {
+                        type = 'comment';
+                        content = comment.comment_text;
+                        author = comment.commenter_name;
+                    }
+                } else {
+                     type = 'post';
+                    const postTitle = post.title || '无标题帖子'; 
+                    content = `${postTitle}: ${post.content_preview}`;
+                    author = post.author_name;
                 }
-        
+                openForumForwardPicker(type, content, author, postId);
+            }
+        });
+
+
+// 为详情页顶部的“转发”按钮绑定事件
+document.getElementById('forum-forward-post-btn').addEventListener('click', async () => {
+    const detailContainer = document.getElementById('forum-post-detail-container');
+    const postId = parseInt(detailContainer.dataset.currentPostId);
+    if (!postId) return;
+    const post = await db.forumPosts.get(postId);
+    if (post) {
+        const content = `${post.title}: ${post.content_preview}`;
+        openForumForwardPicker('post', content, post.author_name, postId);
+    }
+});
+
+
+
+                  
+                }             
                 init();
             });
-        
+       // ▼▼▼ 【全新添加：屏幕高度动态修复方案】 ▼▼▼
+
+/**
+ * 获取当前窗口的真实可视高度，并将其设置为一个CSS变量
+ */
+function setAppHeight() {
+    // 1. 获取一个名为 '--app-height' 的CSS变量
+    const doc = document.documentElement;
+    // 2. 将当前窗口的内部高度（最精确的可视高度）设置为这个变量的值
+    doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+}
+
+// 1. 在页面加载时，立即执行一次，设置初始高度
+window.addEventListener('load', setAppHeight);
+
+// 2. 当窗口尺寸变化时（包括键盘弹出/收起，或屏幕旋转），再次执行
+window.addEventListener('resize', setAppHeight);
+
+// ▲▲▲ 【代码添加结束】 ▲▲▲ 
     </script>
     <div id="qzone-sticker-panel">
         <div id="qzone-sticker-grid"></div>
@@ -30180,7 +32121,7 @@ document.getElementById('status-bar-toggle-switch').addEventListener('change', (
 
     <div class="profile-section devils-desire"> <div class="profile-section-header">
             <span class="profile-section-icon">😈</span>
-            <label>欲望</label>
+            <label>想要</label>
         </div>
         <p id="profile-random-jottings"></p>
     </div>
