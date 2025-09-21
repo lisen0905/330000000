@@ -6280,7 +6280,7 @@
 
 /* ▼▼▼ 【布局终极修复】请用这一整块代码，完整替换掉您旧的所有主屏幕和个人资料相关CSS ▼▼▼ */
 
-        /* --- 1. 重新定义主屏幕布局，移除垂直内边距 --- */
+   /* --- 1. 重新定义主屏幕布局，移除垂直内边距 --- */
         #home-screen {
             background: linear-gradient(135deg, #6DD5FA, #2980B9);
             background-size: cover;
@@ -6294,6 +6294,12 @@
             align-items: center;
             height: 100%;
             overflow: hidden; /* 添加一道保险，强制禁止滚动 */
+            /* ▼▼▼ 【新加的代码】开始 ▼▼▼ */
+            /* 核心修复：在这里为整个主屏幕添加一个底部的内边距。 */
+            /* 这个内边距的高度，正好就是iOS设备底部“小黑条”安全区的高度。 */
+            /* 这样，主屏幕的蓝色渐变背景就能延伸到屏幕的最底部了。 */
+            padding-bottom: env(safe-area-inset-bottom);
+            /* ▲▲▲ 【新加的代码】结束 ▲▲▲ */
         }
 
         /* --- 2. 将顶部留白改为外边距，应用到内容区 --- */
@@ -6390,7 +6396,7 @@
         .desktop-widget p, .desktop-widget span { margin: 0; }
         #desktop-app-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-content: start; }
 
-        /* --- 5. 将底部留白改为外边距，应用到 Dock 区 --- */
+     /* --- 5. 将底部留白改为外边距，应用到 Dock 区 --- */
         #desktop-dock {
             background-color: rgba(255, 255, 255, 0.15);
             border-radius: 20px;
@@ -6400,7 +6406,12 @@
             gap: 30px;
             width: fit-content;
             flex-shrink: 0;
-            margin-bottom: calc(20px + env(safe-area-inset-bottom)); /* 核心修改：使用 margin 代替 padding */
+            /* ▼▼▼ 【新代码】修改开始 ▼▼▼ */
+            /* 核心修复：因为主屏幕已经有了 padding-bottom 来处理安全区， */
+            /* 所以我们这里不再需要 env(safe-area-inset-bottom) 了。 */
+            /* 我们只保留 20px 的外边距，让Dock栏和屏幕底部保持一点美观的距离。*/
+            margin-bottom: 20px;
+            /* ▲▲▲ 【新代码】修改结束 ▲▲▲ */
         }
         
         /* --- 6. 桌面图标 (所有样式保持不变) --- */
@@ -7386,6 +7397,35 @@
     margin-left: auto;
 }
 /* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+        /* ▼▼▼ 【全新】这是为“强制竖屏模式”功能添加的所有新样式 ▼▼▼ */
+
+        /* 1. 当强制竖屏模式开启时，我们给 <body> 标签添加一个背景色，并让它变成一个Flex容器来居中我们的“手机” */
+        body.force-portrait-mode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2c3e50; /* 一个比较护眼的深蓝灰色背景 */
+            min-height: 100vh; /* 确保背景至少填满整个浏览器窗口 */
+            padding: 20px 0; /* 在手机模型的上下留出一点空间 */
+            box-sizing: border-box;
+        }
+
+        /* 2. 在这个模式下，我们为 #phone-screen 设置一个固定的、类似手机的尺寸和外观 */
+        body.force-portrait-mode #phone-screen {
+            width: 375px;  /* 模拟 iPhone 的标准宽度 */
+            max-width: 100vw; /* 在极窄窗口下防止溢出 */
+            height: 812px; /* 模拟 iPhone 的标准高度 */
+            max-height: 90vh; /* 在极矮窗口下防止溢出 */
+            border-radius: 40px; /* 模拟手机的圆角 */
+            box-shadow: 0 15px 45px rgba(0,0,0,0.3); /* 添加漂亮的3D阴影 */
+            border: 8px solid black; /* 添加一个黑色的手机边框 */
+            overflow: hidden; /* 关键！确保内部内容不会溢出圆角 */
+            position: relative; /* 确保内部绝对定位的元素（如弹窗）能正常工作 */
+            flex-shrink: 0; /* 防止Flex布局意外地压缩它 */
+        }
+        /* ▲▲▲ 新样式粘贴结束 ▲▲▲ */
+      
     </style>
 </head>
 <body>
@@ -8096,6 +8136,20 @@
                         <span class="slider"></span>
                     </label>
                 </div>
+              <!-- ▼▼▼ 【新加的代码】开始 ▼▼▼ -->
+<!-- 全新：强制竖屏模式开关 -->
+<div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <label for="force-portrait-switch" style="margin-bottom: 0;">强制竖屏模式</label>
+        <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px;">
+            在电脑等宽屏设备上，强制将界面显示为手机竖屏样式。
+        </p>
+    </div>
+    <label class="toggle-switch">
+        <input type="checkbox" id="force-portrait-switch">
+        <span class="slider"></span>
+    </label>
+</div>
 <!-- ▼▼▼ 在这里粘贴下面的新代码 ▼▼▼ -->
 <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
     <label for="status-bar-toggle-switch" style="margin-bottom: 0;">显示顶部状态栏</label>
@@ -12598,10 +12652,11 @@ async function loadAllDataFromDB() {
     }
 
     state.apiConfig = apiConfig || { id: 'main', proxyUrl: '', apiKey: '', model: '', secondaryProxyUrl: '', secondaryApiKey: '', secondaryModel: '' };
+
 // ▼▼▼ 【请用这个 V2 版本】替换旧的 state.globalSettings 初始化代码 ▼▼▼
 state.globalSettings = globalSettings || { 
     id: 'main', 
-    showStatusBar: false, // <-- 新增这一行，默认关闭
+    showStatusBar: false, 
     wallpaper: 'linear-gradient(135deg, #89f7fe, #66a6ff)', 
     fontUrl: '', 
     enableBackgroundActivity: false, 
@@ -12610,7 +12665,10 @@ state.globalSettings = globalSettings || {
     appIcons: { ...DEFAULT_APP_ICONS },
     globalCss: '',
     notificationSoundUrl: '',
-    widgetData: {} // 【核心修改】在这里新增一个空对象
+    widgetData: {},
+    /* ▼▼▼ 【新加的代码】开始 ▼▼▼ */
+    forcePortraitMode: false // 为强制竖屏模式添加一个默认设置（默认关闭）
+    /* ▲▲▲ 【新加的代码】结束 ▲▲▲ */
 };
 // 确保即使从旧数据库加载，这个属性也存在
 if (!state.globalSettings.widgetData) {
@@ -13306,7 +13364,9 @@ if (!state.globalSettings.widgetData) {
     // ▼▼▼ 在这里粘贴新代码 ▼▼▼
     document.getElementById('notification-sound-url-input').value = state.globalSettings.notificationSoundUrl || '';
     // ▲▲▲ 新代码粘贴结束 ▲▲▲
-              document.getElementById('status-bar-toggle-switch').checked = state.globalSettings.showStatusBar || false;
+            
+          document.getElementById('status-bar-toggle-switch').checked = state.globalSettings.showStatusBar || false;
+         document.getElementById('force-portrait-switch').checked = state.globalSettings.forcePortraitMode || false;
         }
         // ▲▲▲ 替换结束 ▲▲▲
                 window.renderWallpaperScreenProxy = renderWallpaperScreen;
@@ -23878,7 +23938,25 @@ function updateMusicProgressBar() {
             }
         }
         // ▲▲▲ 新函数粘贴结束 ▲▲▲
+                // ▲▲▲ 新代码粘贴结束 ▲▲▲
         
+        // ▼▼▼ 【全新】这是为“强制竖屏模式”添加的核心功能，请粘贴到这里 ▼▼▼
+        
+        /**
+         * 【全新】根据全局设置，应用或移除强制竖屏模式的样式
+         */
+        function applyForcePortraitMode() {
+            // 从全局状态中读取设置
+            const isEnabled = state.globalSettings.forcePortraitMode || false;
+            // 根据设置，给 body 标签添加或移除 .force-portrait-mode 类
+            document.body.classList.toggle('force-portrait-mode', isEnabled);
+        }
+        
+        // ▲▲▲ 新增函数结束 ▲▲▲
+
+        /**
+         * 【V3.0 | 最终修复版】处理长截图功能
+         */
         // ▼▼▼ 【全新】请将这个函数粘贴到JS功能函数定义区 ▼▼▼
         /**
          * 向当前聊天的历史记录中添加一条关于音乐操作的、对用户隐藏的系统消息
@@ -27985,6 +28063,7 @@ function applyStatusBarVisibility() {
         
                     await loadAllDataFromDB();
                     applyStatusBarVisibility(); // <-- 新增这一行
+                    applyForcePortraitMode();
                     // ▼▼▼ 【核心】在这里添加下面这行新代码 ▼▼▼
                     await migrateOldRedPacketData();
                     // ▲▲▲ 添加结束 ▲▲▲
@@ -28409,8 +28488,10 @@ audioPlayer.addEventListener('play', () => {
     state.globalSettings.notificationSoundUrl = document.getElementById('notification-sound-url-input').value.trim();
     // ▲▲▲ 新代码粘贴结束 ▲▲▲
           state.globalSettings.showStatusBar = document.getElementById('status-bar-toggle-switch').checked; // <-- 新增这一行        
-            // 【核心修改】保存图标设置（它已经在内存中了，我们只需要把整个globalSettings存起来）
-            await db.globalSettings.put(state.globalSettings);
+             state.globalSettings.forcePortraitMode = document.getElementById('force-portrait-switch').checked;
+          // 【核心修改】保存图标设置（它已经在内存中了，我们只需要把整个globalSettings存起来）
+           
+          await db.globalSettings.put(state.globalSettings);
             // ▼▼▼ 在这里粘贴另一行新代码 ▼▼▼
             applyGlobalCss(state.globalSettings.globalCss);
             // ▲▲▲ 新代码粘贴结束 ▲▲▲
@@ -28423,7 +28504,14 @@ audioPlayer.addEventListener('play', () => {
             applyAppIcons(); // 重新应用所有图标
         
             alert('外观设置已保存并应用！');
-        
+
+    // ▼▼▼ 【全新】为强制竖屏开关添加“实时预览”的事件监听 ▼▼▼
+    document.getElementById('force-portrait-switch').addEventListener('change', (e) => {
+        // 当用户点击开关时，直接切换样式，让用户能立刻看到效果
+        document.body.classList.toggle('force-portrait-mode', e.target.checked);
+    });
+    // ▲▲▲ 新增代码结束 ▲▲▲
+          
             showScreen('home-screen');
         });
         // ▲▲▲ 替换结束 ▲▲▲
