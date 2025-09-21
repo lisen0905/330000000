@@ -730,13 +730,11 @@
             transform: translateX(-50%);
         }
         
-      .qzone-content {
+.qzone-content {
     flex-grow: 1;
     overflow-y: auto;
-    /* ▼▼▼ 新增下面这一行代码 ▼▼▼ */
-    padding-bottom: 90px;
-}
-        
+
+} 
         .qzone-profile-header {
             position: relative;
             margin-bottom: 20px;
@@ -866,8 +864,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    /* ▼▼▼ 新增下面这一行代码 ▼▼▼ */
-    padding-bottom: 90px;
+  
 }
 
       
@@ -6303,13 +6300,19 @@
         }
 
         /* --- 2. 将顶部留白改为外边距，应用到内容区 --- */
-        #main-content-area {
+#main-content-area {
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 30px; 
             align-items: center;
             margin-top: calc(20px + env(safe-area-inset-top)); /* 核心修改：使用 margin 代替 padding */
+            /* ▼▼▼ 【新代码】修改开始 ▼▼▼ */
+            /* 核心修复：这三行代码将确保内容区能正确地在可用空间内收缩，并隐藏任何可能溢出的内容，从而彻底禁止主屏幕滚动。 */
+            flex-grow: 1;      /* 1. 让它自动填充可用的剩余空间 */
+            overflow-y: hidden;/* 2. 隐藏任何【垂直方向】超出的内容 */
+            overflow-x: hidden;/* 3. 【新加的代码】隐藏任何【水平方向】超出的内容 */
+            /* ▲▲▲ 【新代码】修改结束 ▲▲▲ */
         }
 
         /* --- 3. 个人资料卡片 (所有样式保持不变) --- */
@@ -8142,7 +8145,7 @@
     <div>
         <label for="force-portrait-switch" style="margin-bottom: 0;">强制竖屏模式</label>
         <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px;">
-            在电脑等宽屏设备上，强制将界面显示为手机竖屏样式。
+       
         </p>
     </div>
     <label class="toggle-switch">
@@ -11149,7 +11152,7 @@ async function switchStickerCategory(categoryId, isInitialLoad = false) {
                 }
                 window.updateListenTogetherIconProxy = () => {};
         
-                function switchToChatListView(viewId) {
+           function switchToChatListView(viewId) {
                     const chatListScreen = document.getElementById('chat-list-screen');
                     const views = {
                         'messages-view': document.getElementById('messages-view'),
@@ -11191,6 +11194,25 @@ async function switchStickerCategory(categoryId, isInitialLoad = false) {
             mainBottomNav.style.display = 'flex';
             
             // ▲▲▲ 修正结束 ▲▲▲
+
+            /* ▼▼▼ 【新加的代码】开始 ▼▼▼ */
+            /* 这是解决动态页和回忆页底部空隙的核心代码。*/
+
+            /* 1. 我们获取底部导航栏和两个页面的内容区。*/
+            const bottomNav = document.getElementById('chat-list-bottom-nav');
+            const qzoneContent = document.getElementById('qzone-screen').querySelector('.qzone-content');
+            const memoriesList = document.getElementById('memories-list');
+
+            /* 2. 确保它们都存在，才进行操作。*/
+            if (bottomNav && qzoneContent && memoriesList) {
+                /* 3. 获取底部导航栏的【实际高度】。*/
+                const navHeight = bottomNav.offsetHeight;
+
+                /* 4. 将这个精确的高度，作为内边距（padding）应用给两个内容区。*/
+                qzoneContent.style.paddingBottom = `${navHeight}px`;
+                memoriesList.style.paddingBottom = `${navHeight}px`;
+            }
+            /* ▲▲▲ 【新加的代码】结束 ▲▲▲ */
         
             if (viewId !== 'memories-view') {
                 activeCountdownTimers.forEach(timerId => clearInterval(timerId));
