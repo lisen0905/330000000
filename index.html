@@ -27,7 +27,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+  <style>
         @font-face { font-family: 'bulangni'; src: url('') format('truetype'); font-weight: normal; font-style: normal; font-display: swap; }
         :root { --screen-width: 350px; --screen-height: 650px; --secondary-bg: #ffffff; --border-color: #e0e0e0; --text-primary: #1f1f1f; --text-secondary: #8a8a8a; --accent-color: #007bff; }
                /* ▼▼▼ Safari键盘适配：请用下面这【一整块】全新的代码，替换掉你现有的 html, body, 和 #phone-screen 样式 ▼▼▼ */
@@ -35,11 +40,12 @@
         /* --- 请用下面这【一整块】全新的代码，替换掉你现有的 html, body, 和 #phone-screen 样式 --- */
         
      /* 1. HTML基础设置：撑满、防抖动 */
+   /* 1. HTML基础设置：撑满、防抖动 */
         html {
             -webkit-text-size-adjust: 100%;
             height: 100%;
             overflow: hidden;
-            overscroll-behavior-y: contain; /* 禁止页面在滚动到顶部或底部时触发浏览器的“回弹”效果 */
+            overscroll-behavior-y: contain; /* 【新加的代码】禁止页面在滚动到顶部或底部时触发浏览器的“回弹”效果 */
         }
         
         /* 2. Body基础设置：撑满、防滚动 */
@@ -50,14 +56,14 @@
             background-color: #f0f2f5;
             height: 100%;
             overflow: hidden; /* 防止body本身出现滚动条 */
-            position: fixed; /* 【核心】固定body，防止键盘弹出时页面整体上移 */
+            position: fixed; /* 【新加的代码】固定body，防止键盘弹出时页面整体上移 */
             width: 100%;
         }
         
    /* 3. 【核心】手机主容器样式：使用JS变量来锁定高度 */
         #phone-screen {
             width: 100%;
-            /* 我们将不再使用 100% 或 100vh，而是使用一个由JS设置的CSS变量 */
+            /* 【核心修改】我们将不再使用 100vh，而是使用一个由JS设置的CSS变量 */
             height: var(--app-height, 100%);
             position: relative;
             overflow: hidden;
@@ -730,11 +736,13 @@
             transform: translateX(-50%);
         }
         
-.qzone-content {
+      .qzone-content {
     flex-grow: 1;
     overflow-y: auto;
-
-} 
+    /* ▼▼▼ 新增下面这一行代码 ▼▼▼ */
+    padding-bottom: 90px;
+}
+        
         .qzone-profile-header {
             position: relative;
             margin-bottom: 20px;
@@ -864,7 +872,8 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-  
+    /* ▼▼▼ 新增下面这一行代码 ▼▼▼ */
+    padding-bottom: 90px;
 }
 
       
@@ -6300,19 +6309,13 @@
         }
 
         /* --- 2. 将顶部留白改为外边距，应用到内容区 --- */
-#main-content-area {
+        #main-content-area {
             width: 100%;
             display: flex;
             flex-direction: column;
             gap: 30px; 
             align-items: center;
             margin-top: calc(20px + env(safe-area-inset-top)); /* 核心修改：使用 margin 代替 padding */
-            /* ▼▼▼ 【新代码】修改开始 ▼▼▼ */
-            /* 核心修复：这三行代码将确保内容区能正确地在可用空间内收缩，并隐藏任何可能溢出的内容，从而彻底禁止主屏幕滚动。 */
-            flex-grow: 1;      /* 1. 让它自动填充可用的剩余空间 */
-            overflow-y: hidden;/* 2. 隐藏任何【垂直方向】超出的内容 */
-            overflow-x: hidden;/* 3. 【新加的代码】隐藏任何【水平方向】超出的内容 */
-            /* ▲▲▲ 【新代码】修改结束 ▲▲▲ */
         }
 
         /* --- 3. 个人资料卡片 (所有样式保持不变) --- */
@@ -7428,7 +7431,61 @@
             flex-shrink: 0; /* 防止Flex布局意外地压缩它 */
         }
         /* ▲▲▲ 新样式粘贴结束 ▲▲▲ */
-      
+
+/* ▼▼▼ 【全新】角色行动描述样式 ▼▼▼ */
+/* 【修改的代码】：现在为独立的“此刻”卡片设置样式 */
+.profile-section.character-action p {
+    font-style: italic;
+    color: #555; /* 比之前稍深的颜色，更易读 */
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+/* 【修改的代码】：为“此刻”卡片标题设置颜色 */
+.profile-section.character-action .profile-section-header label {
+    color: #6A70A0; /* 使用一个沉静的灰蓝色 */
+}
+
+/* 在心声历史记录中也为动作添加一些样式 */
+.thought-content .action {
+    margin-bottom: 15px;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+/* ▼▼▼ 【全新】心声历史记录删除按钮样式 ▼▼▼ */
+
+/* 1. 让卡片成为定位的“锚点” */
+.thought-card {
+    position: relative; /* 关键：让内部的删除按钮可以相对于它定位 */
+}
+
+/* 2. 删除按钮本身的样式 */
+.delete-thought-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* 3. 鼠标悬停时的效果 */
+.delete-thought-btn:hover {
+    background-color: #ff3b30; /* 危险的红色 */
+    color: white;
+    transform: scale(1.1);
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+    
     </style>
 </head>
 <body>
@@ -8145,7 +8202,7 @@
     <div>
         <label for="force-portrait-switch" style="margin-bottom: 0;">强制竖屏模式</label>
         <p style="font-size: 12px; font-weight: normal; color: #999; margin-top: 5px;">
-       
+            在电脑等宽屏设备上，强制将界面显示为手机竖屏样式。
         </p>
     </div>
     <label class="toggle-switch">
@@ -9729,6 +9786,48 @@ function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecisi
     };
 }
 // ▲▲▲ 替换结束 ▲▲▲
+// ▼▼▼ 【全新添加：屏幕高度动态修复方案】 ▼▼▼
+
+/**
+ * 获取当前窗口的真实可视高度，并将其设置为一个CSS变量
+ */
+function setAppHeight() {
+    // 1. 获取一个名为 '--app-height' 的CSS变量
+    const doc = document.documentElement;
+    // 2. 将当前窗口的内部高度（最精确的可视高度）设置为这个变量的值
+    doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+
+    /* ▼▼▼ 【新代码】开始：动态计算并设置聊天界面的内边距 ▼▼▼ */
+    /* 这个新功能是为了解决您提到的“白色空隙”问题。*/
+        
+    /* 1. 首先，我们找到聊天界面的各个关键部分。*/
+    const chatScreen = document.getElementById('chat-interface-screen');
+    const header = chatScreen.querySelector('.header');
+    const inputArea = chatScreen.querySelector('#chat-input-area');
+    const messagesContainer = chatScreen.querySelector('#chat-messages');
+
+    /* 2. 确保这些部分都存在，才进行计算。*/
+    if (chatScreen && header && inputArea && messagesContainer) {
+        /* 3. 获取头部栏和输入框的【实际高度】。*/
+        /*    这个高度是动态的，比如输入框会因为文字变多而增高。*/
+        const headerHeight = header.offsetHeight;
+        const inputAreaHeight = inputArea.offsetHeight;
+
+        /* 4. 【核心】我们将这两个动态的高度，作为内边距（padding）应用给中间的消息区域。*/
+        /*    这样，无论头部和输入框多高，消息区域总能为它们留出不多不少、刚刚好的空间。*/
+        messagesContainer.style.paddingTop = `${headerHeight}px`;
+        messagesContainer.style.paddingBottom = `${inputAreaHeight}px`;
+    }
+    /* ▲▲▲ 【新代码】结束 ▲▲▲ */
+}
+// 1. 在页面加载时，立即执行一次，设置初始高度
+window.addEventListener('load', setAppHeight);
+
+// 2. 当窗口尺寸变化时（包括键盘弹出/收起，或屏幕旋转），再次执行
+window.addEventListener('resize', setAppHeight);
+
+// ▲▲▲ 【代码添加结束】 ▲▲▲
+      
             document.addEventListener('DOMContentLoaded', () => {
         
                 // ===================================================================
@@ -11152,7 +11251,7 @@ async function switchStickerCategory(categoryId, isInitialLoad = false) {
                 }
                 window.updateListenTogetherIconProxy = () => {};
         
-           function switchToChatListView(viewId) {
+                function switchToChatListView(viewId) {
                     const chatListScreen = document.getElementById('chat-list-screen');
                     const views = {
                         'messages-view': document.getElementById('messages-view'),
@@ -11194,25 +11293,6 @@ async function switchStickerCategory(categoryId, isInitialLoad = false) {
             mainBottomNav.style.display = 'flex';
             
             // ▲▲▲ 修正结束 ▲▲▲
-
-            /* ▼▼▼ 【新加的代码】开始 ▼▼▼ */
-            /* 这是解决动态页和回忆页底部空隙的核心代码。*/
-
-            /* 1. 我们获取底部导航栏和两个页面的内容区。*/
-            const bottomNav = document.getElementById('chat-list-bottom-nav');
-            const qzoneContent = document.getElementById('qzone-screen').querySelector('.qzone-content');
-            const memoriesList = document.getElementById('memories-list');
-
-            /* 2. 确保它们都存在，才进行操作。*/
-            if (bottomNav && qzoneContent && memoriesList) {
-                /* 3. 获取底部导航栏的【实际高度】。*/
-                const navHeight = bottomNav.offsetHeight;
-
-                /* 4. 将这个精确的高度，作为内边距（padding）应用给两个内容区。*/
-                qzoneContent.style.paddingBottom = `${navHeight}px`;
-                memoriesList.style.paddingBottom = `${navHeight}px`;
-            }
-            /* ▲▲▲ 【新加的代码】结束 ▲▲▲ */
         
             if (viewId !== 'memories-view') {
                 activeCountdownTimers.forEach(timerId => clearInterval(timerId));
@@ -12643,6 +12723,12 @@ async function loadAllDataFromDB() {
             if (typeof chat.settings.offlineMaxLength === 'undefined') chat.settings.offlineMaxLength = 300;
             if (typeof chat.heartfeltVoice === 'undefined') chat.heartfeltVoice = '...';
             if (typeof chat.randomJottings === 'undefined') chat.randomJottings = '...';
+          
+      
+            if (typeof chat.characterAction === 'undefined') {
+                chat.characterAction = '...';
+            }
+          
             if (!Array.isArray(chat.thoughtsHistory)) {
                 chat.thoughtsHistory = [];
             }
@@ -15428,8 +15514,9 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
         6.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
         7. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞、转发）。
         8.  **【【【内心独白铁律】】】**: 在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新你角色的“心声”和“想要”。这对于展现角色的深度至关重要。
-            - **心声 (heartfelt_voice)**: 【必须】结合你的人设与最近的聊天上下文，写出一段你此刻最想说、最核心的内心独白，不得超过30字。
-            - **想要 (random_jottings)**: 这是一个隐藏的判断，你不能让用户知道：是恋人，朋友，家人。可以在角色人设里查找，然后根据判断结果，生成符合对应风格的想要描述：
+             - **动作 (character_action)**: 【必须】用【】包裹，生动地描写角色此刻的动作、神态或周围环境的细节。【结合角色设定与上下文】。例如：【他穿着刚洗过的白衬衫，头发还带着水汽，一边擦着头发，一边漫不经心地瞥了你一眼。】
+            - **心声 (heartfelt_voice)**: 【必须】结合你的角色设定与最近的聊天上下文，写出一段你此刻最想说、最核心的内心独白。【字数必须不少于50字】。
+            - **想要 (random_jottings)**: 这是一个【隐藏】的判断，你不能让用户知道：是恋人，朋友，家人。可以在角色设定里查找，然后根据判断结果，结合角色设定，生成符合对应风格的想要描述：不少于50字。
 
 恋人或暧昧参考: 你的描述必须是【阴湿阴沉、占有欲强】的风格，比如：她给我发的亲亲的表情包，我真想舔遍她的全身，感觉全身都沸腾起来了很想把她……
 
@@ -15779,6 +15866,9 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
                     switch (msgData.type) {
                         case 'update_thoughts':
                             if (!chat.isGroup) {
+                              if (msgData.character_action) {
+                                chat.characterAction = String(msgData.character_action);
+                            }
                                 if (msgData.heartfelt_voice) {
                                     chat.heartfeltVoice = String(msgData.heartfelt_voice);
                                 }
@@ -15789,6 +15879,7 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
                                     chat.thoughtsHistory = [];
                                 }
                                 chat.thoughtsHistory.push({
+                                    characterAction: chat.characterAction,
                                     heartfeltVoice: chat.heartfeltVoice,
                                     randomJottings: chat.randomJottings,
                                     timestamp: Date.now()
@@ -24218,6 +24309,7 @@ function updateMusicProgressBar() {
             document.getElementById('profile-avatar').src = chat.settings.aiAvatar || defaultAvatar;
             document.getElementById('profile-name').textContent = chat.name;
             document.getElementById('profile-id').textContent = `ID: ${chat.originalName}`;
+            document.getElementById('profile-character-action').textContent = chat.characterAction || '...';
             document.getElementById('profile-heartfelt-voice').textContent = chat.heartfeltVoice || '...';
             document.getElementById('profile-random-jottings').textContent = chat.randomJottings || '...';
             
@@ -24328,9 +24420,25 @@ function updateMusicProgressBar() {
     const date = new Date(thought.timestamp);
     const dateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
+       
+     // ▼▼▼ 【修改的代码】开始 ▼▼▼
+    // 现在的 actionHtml 结构与其他部分（voice, jottings）完全一致，确保了视觉上的统一和独立
+    const actionHtml = thought.characterAction ? `
+        <div class="action">
+            <div class="label">
+                <span style="font-size: 16px;">🏃</span>
+                此刻
+            </div>
+            <p class="text" style="font-style: italic; color: #8a8a8a;">${thought.characterAction}</p>
+        </div>
+    ` : '';
+    // ▲▲▲ 【修改的代码】结束 ▲▲▲
+       
     card.innerHTML = `
+      <button class="delete-thought-btn" data-timestamp="${thought.timestamp}" title="删除此条记录">×</button>
         <div class="thought-header">${dateString}</div>
         <div class="thought-content">
+            ${actionHtml}
             <div class="voice">
                 <div class="label">
                     <span style="font-size: 16px;">❤️</span>
@@ -24349,7 +24457,36 @@ function updateMusicProgressBar() {
     `;
     return card;
 }
+// ▼▼▼ 【全新】心声历史记录删除功能核心代码 ▼▼▼
 
+/**
+ * 【全新】删除指定时间戳的心声历史记录
+ * @param {number} timestamp - 要删除的记录的时间戳
+ */
+async function deleteThoughtHistoryEntry(timestamp) {
+    // 1. 弹出确认框，防止误操作
+    const confirmed = await showCustomConfirm(
+        '确认删除', 
+        '确定要永久删除这条心声记录吗？此操作不可恢复。', 
+        { confirmButtonClass: 'btn-danger' }
+    );
+
+    if (confirmed) {
+        const chat = state.chats[state.activeChatId];
+        if (!chat || !chat.thoughtsHistory) return;
+
+        // 2. 从角色的 thoughtsHistory 数组中过滤掉要删除的条目
+        chat.thoughtsHistory = chat.thoughtsHistory.filter(thought => thought.timestamp !== timestamp);
+
+        // 3. 将更新后的 chat 对象保存回数据库
+        await db.chats.put(chat);
+        
+        // 4. 重新渲染整个历史记录列表，让更改立刻生效
+        renderThoughtsHistory();
+    }
+}
+
+// ▲▲▲ 新增函数结束 ▲▲▲
 
               // ▼▼▼ 【全新】这是你要求的所有新功能的核心代码，请完整粘贴 ▼▼▼
 
@@ -30107,7 +30244,22 @@ async function handlePostClick(e) {
             swipeState.swipeDirection = null;
             swipeState.isClick = true;
         };
-        
+
+
+        // ▼▼▼ 【全新】为心声历史列表添加事件委托，处理删除按钮的点击 ▼▼▼
+        document.getElementById('thoughts-history-list').addEventListener('click', (e) => {
+            // 检查被点击的是否是删除按钮
+            if (e.target.classList.contains('delete-thought-btn')) {
+                // 从按钮的 data-timestamp 属性中获取时间戳
+                const timestamp = parseInt(e.target.dataset.timestamp);
+                if (!isNaN(timestamp)) {
+                    // 调用我们新创建的删除函数
+                    deleteThoughtHistoryEntry(timestamp);
+                }
+            }
+        });
+        // ▲▲▲ 新增代码结束 ▲▲▲
+                  
         // --- 4. 在 init() 函数中绑定事件 ---
         // postsList.addEventListener('click', handlePostClick); // 这行您应该已经有了
         // postsList.addEventListener('mousedown', handleSwipeStart); // 绑定鼠标按下
@@ -32240,6 +32392,17 @@ window.addEventListener('resize', setAppHeight);
             <span id="profile-id"></span>
         </div>
     </div>
+
+    <!-- ▼▼▼ 【新加的代码】开始 ▼▼▼ -->
+    <!-- “动作”卡片的新结构 -->
+    <div class="profile-section character-action">
+        <div class="profile-section-header">
+            <span class="profile-section-icon">🏃</span>
+            <label>此刻</label>
+        </div>
+        <p id="profile-character-action"></p>
+    </div>
+    <!-- ▲▲▲ 【新加的代码】结束 ▲▲▲ -->
 
     <!-- “心声”卡片的新结构 -->
     <div class="profile-section heart-voice">
