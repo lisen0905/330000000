@@ -49,29 +49,32 @@
         }
         
         /* 2. Body基础设置：撑满、防滚动 */
-        body {
-            margin: 0;
-            font-family: 'bulangni', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-weight: normal;
-            background-color: #ffffff;
-            height: 100%;
-            overflow: hidden; /* 防止body本身出现滚动条 */
-            position: fixed; /* 【新加的代码】固定body，防止键盘弹出时页面整体上移 */
-            width: 100%;
-        }
+   /* 2. Body基础设置：撑满 */
+body {
+    margin: 0;
+    /* ... font styles ... */
+    background-color: #ffffff; 
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* 保持 overflow: hidden */
+    /* position: fixed; 已被移除 */
+}
         
-   /* 3. 【核心】手机主容器样式：使用JS变量来锁定高度 */
-        #phone-screen {
-            width: 100%;
-            /* 【核心修改】我们将不再使用 100vh，而是使用一个由JS设置的CSS变量 */
-            height: var(--app-height, 100%);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background-color: #ffffff;
-        }
-
+  /* 3. 【核心】手机主容器样式：固定在视窗上 */
+#phone-screen {
+    position: fixed; /* <--- 关键修改1：将它固定在屏幕上 */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; /* <--- 关键修改2：这四行代码会强制它填满整个可视区域 */
+    
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    
+    /* width 和 height 现在由上面的 top/left/right/bottom 自动控制，不再需要了 */
+}
         /* ▲▲▲ 【修复结束】 ▲▲▲ */
         #chat-input-area {
             flex-shrink: 0;
@@ -9697,34 +9700,25 @@
  * 获取当前窗口的真实可视高度，并设置给主容器
  */
 function setScreenHeight() {
-    const phoneScreen = document.getElementById('phone-screen');
-    if (phoneScreen) {
-        // window.innerHeight 能最精确地获取到当前可见区域的高度
-        phoneScreen.style.height = `${window.innerHeight}px`;
-    }
+    // const phoneScreen = document.getElementById('phone-screen');
+    // if (phone-screen) {
+    //     phoneScreen.style.height = `${window.innerHeight}px`; // <--- 这一行被注释或删除了
+    // }
 
-    /* ▼▼▼ 【新代码】开始：动态计算并设置聊天界面的内边距 ▼▼▼ */
-    /* 这个新功能是为了解决您提到的“白色空隙”问题。*/
-
-    /* 1. 首先，我们找到聊天界面的各个关键部分。*/
+    /* ▼▼▼ 这部分非常有用的代码需要保留 ▼▼▼ */
     const chatScreen = document.getElementById('chat-interface-screen');
     const header = chatScreen.querySelector('.header');
     const inputArea = chatScreen.querySelector('#chat-input-area');
     const messagesContainer = chatScreen.querySelector('#chat-messages');
 
-    /* 2. 确保这些部分都存在，才进行计算。*/
     if (chatScreen && header && inputArea && messagesContainer) {
-        /* 3. 获取头部栏和输入框的【实际高度】。*/
-        /*    这个高度是动态的，比如输入框会因为文字变多而增高。*/
         const headerHeight = header.offsetHeight;
         const inputAreaHeight = inputArea.offsetHeight;
-
-        /* 4. 【核心】我们将这两个动态的高度，作为内边距（padding）应用给中间的消息区域。*/
-        /*    这样，无论头部和输入框多高，消息区域总能为它们留出不多不少、刚刚好的空间。*/
         messagesContainer.style.paddingTop = `${headerHeight}px`;
         messagesContainer.style.paddingBottom = `${inputAreaHeight}px`;
     }
-    /* ▲▲▲ 【新代码】结束 ▲▲▲ */
+    /* ▲▲▲ 保留代码结束 ▲▲▲ */
+
 }
 // 1. 在页面加载时，立即执行一次，设置初始高度
 window.addEventListener('load', setScreenHeight);
