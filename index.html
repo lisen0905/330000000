@@ -2759,18 +2759,24 @@
         
         /* === 【全新】聊天界面头部状态栏样式 === */
         
-        /* 1. 标题和状态的总容器，使用flex布局让它们垂直排列 */
+      /* 1. 标题和状态的总容器，使用flex布局让它们垂直排列 */
         #chat-header-title-wrapper {
             display: flex;
             flex-direction: column;
-            align-items: center; /* 水平居中 */
+            /* ▼▼▼ 【修改的代码】开始 ▼▼▼ */
+            align-items: flex-start; /* 将内部元素（文字）从“居中”改为“居左”对齐 */
+            /* ▲▲▲ 【修改的代码】结束 ▲▲▲ */
             gap: 2px; /* 标题和状态之间的微小间距 */
             
             /* 为了让它能在flex布局中正确居中 */
             position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 60%;
+            /* ▼▼▼ 【修改的代码】开始 ▼▼▼ */
+            /* 我们不再使用 left: 50% 和 transform 的居中方案 */
+            /* 而是直接定义它距离左边和右边的距离，这样它就会自动拉伸并靠左 */
+            left: 60px;  /* 距离屏幕左侧 60px，为返回按钮留出空间 */
+            right: 80px; /* 距离屏幕右侧 80px，为右侧的操作按钮留出空间 */
+            /* 我们不再需要 max-width 属性，因为左右距离已经限制了它的宽度 */
+            /* ▲▲▲ 【修改的代码】结束 ▲▲▲ */
         }
         
         /* 2. 主标题的样式微调 */
@@ -7484,6 +7490,119 @@
     transform: scale(1.1);
 }
 /* ▲▲▲ 新增CSS结束 ▲▲▲ */
+/* ▼▼▼ 【全新】导航栏爱心跳动动画与轨迹列表样式 ▼▼▼ */
+
+/* 1. 爱心跳动动画 */
+@keyframes heart-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.animated-heart {
+    display: inline-block;
+    animation: heart-pulse 1.5s ease-in-out infinite;
+}
+
+/* 2. 轨迹列表（时间线风格） */
+#trace-list-container {
+    position: relative;
+    padding-left: 30px; /* 为时间线留出空间 */
+}
+
+.trace-item {
+    position: relative;
+    padding: 10px;
+    background-color: var(--secondary-bg);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+/* 3. 时间线的“线”和“点” */
+.trace-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -20px;
+    width: 2px;
+    height: 100%;
+    background-color: var(--border-color);
+}
+.trace-item:last-child::before {
+    display: none; /* 最后一条不显示线 */
+}
+.trace-item::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: -25px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    border: 2px solid var(--secondary-bg);
+}
+
+/* 4. 轨迹内容的样式 */
+.trace-item .time {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+.trace-item .location {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+.trace-item .action {
+    font-size: 14px;
+    line-height: 1.6;
+}
+/* ▲▲▲ 新增CSS结束 ▲▲▲ */
+
+/* ▼▼▼ 【全新 | 轨迹弹窗最终修复样式】 ▼▼▼ */
+        
+ /* 【这是原来的、正确的通用弹窗样式，我们把它恢复回来】 */
+        .modal-content {
+            width: 90%;
+            max-height: 90%;
+            background-color: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+      /* === 【全新】聊天界面头部状态栏样式 === */
+        
+      /* 1. 标题和状态的总容器，使用flex布局让它们垂直排列 */
+        #chat-header-title-wrapper {
+            display: flex;
+            flex-direction: column;
+            /* ▼▼▼ 【修改的代码】开始 ▼▼▼ */
+            align-items: flex-start; /* 将内部元素（文字）从“居中”改为“居左”对齐 */
+            /* ▲▲▲ 【修改的代码】结束 ▲▲▲ */
+            gap: 2px; /* 标题和状态之间的微小间距 */
+            
+            /* 为了让它能在flex布局中正确居中 */
+            position: absolute;
+            /* ▼▼▼ 【修改的代码】开始 ▼▼▼ */
+            /* 我们不再使用 left: 50% 和 transform 的居中方案 */
+            /* 而是直接定义它距离左边和右边的距离，这样它就会自动拉伸并靠左 */
+            left: 60px;  /* 距离屏幕左侧 60px，为返回按钮留出空间 */
+            right: 80px; /* 距离屏幕右侧 80px，为右侧的操作按钮留出空间 */
+            /* 我们不再需要 max-width 属性，因为左右距离已经限制了它的宽度 */
+            /* ▲▲▲ 【修改的代码】结束 ▲▲▲ */
+
+            /* ▼▼▼ 【新加的代码】开始 ▼▼▼ */
+            pointer-events: none; /* 核心修复1：让这个透明容器本身不再拦截鼠标点击 */
+        }
+
+        /* 【新加的代码】：但我们需要恢复其子元素（如可点击的状态栏）的点击功能 */
+        #chat-header-title-wrapper > * {
+            pointer-events: auto; /* 核心修复2：让所有的直接子元素重新可以接收鼠标点击 */
+        }
+        /* ▲▲▲ 【新加的代码】结束 ▲▲▲ */
+
 
     
     </style>
@@ -7906,6 +8025,9 @@
                         </div>
                     </div>
                     <div class="header-actions">
+                        <span class="action-btn" id="open-trace-screen-btn" title="轨迹">
+                            <span class="animated-heart">❤️</span>
+                        </span>
                         <!-- ▼▼▼ 请用这整块代码，替换你现有的 id="open-memory-screen-btn" 的 span 标签 ▼▼▼ -->
                         <span class="action-btn" id="open-memory-screen-btn" title="长期记忆">
                             <!-- 【核心修改】使用SVG图标替换原来的图片 -->
@@ -8094,17 +8216,7 @@
         <button id="delete-selected-stickers-btn">删除 (0)</button>
     </div>
 </div>
-            <!-- 【核心修改2】新增的页签容器 -->
-            <div id="sticker-category-tabs">
-                <!-- 分类页签将由JS动态生成在这里 -->
-            </div>
-            <div id="sticker-grid"></div>
-            <!-- 底部批量删除操作栏 (保持不变) -->
-            <div id="sticker-action-bar" style="display: none;">
-                <button id="delete-selected-stickers-btn">删除 (0)</button>
-            </div>
-        </div>
-        <!-- ▲▲▲ 替换结束 ▲▲▲ -->
+           
           
           <input type="file" id="sticker-upload-input" accept="image/*" style="display: none;">
           <input type="file" id="ai-sticker-upload-input" accept="image/*" multiple hidden>
@@ -9551,6 +9663,30 @@
         </div>
     </div>
     <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
+    <!-- ▼▼▼ 【新加的代码】开始 ▼▼▼ -->
+    <!-- 全新的“轨迹”全屏页面 -->
+ 
+    <div id="trace-modal" class="modal">
+        <div class="modal-content" style="height: 70%;">
+            <div class="modal-header">
+                <span id="trace-modal-title">今日轨迹</span>
+                <span class="action-btn" id="refresh-trace-btn" title="重新生成">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4"></path>
+                        <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+                    </svg>
+                </span>
+            </div>
+            <div class="modal-body" id="trace-list-container" style="padding: 20px 15px; display: flex; flex-direction: column; gap: 15px; background-color: #f0f2f5;">
+                </div>
+            <div class="modal-footer">
+                <button class="save" id="close-trace-modal-btn" style="width: 100%;">关闭</button>
+            </div>
+        </div>
+    </div>
+ 
+
+    <!-- ▲▲▲ 【新加的代码】结束 ▲▲▲ -->
     <input type="file" id="ai-avatar-upload-input" accept="image/*" hidden>
     <input type="file" id="group-avatar-upload-input" accept="image/*" hidden>
     <script>
@@ -20534,7 +20670,196 @@ async function endVideoCall() {
             startAllCountdownTimers();
         }
         // ▲▲▲ 替换结束 ▲▲▲
-      
+
+// ▼▼▼ 【全新】角色“轨迹”功能核心代码 (V2 - 独立页面版) ▼▼▼
+
+/**
+ * 【总入口】打开轨迹功能的全屏页面
+ */
+async function openTraceScreen() {
+    if (!state.activeChatId) return;
+    // 【【【新加的代码】】】
+    document.getElementById('trace-modal').classList.add('visible');
+    // 【【【新加的代码】结束】】
+    // 渲染内容
+    await renderTraceScreen();
+    // 【【【删除的代码】】】 下面这行被删除了
+    // showScreen('trace-screen');
+}
+
+/**
+ * 渲染轨迹弹窗内容，并触发AI生成内容
+ */
+async function renderTraceScreen() {
+    const listEl = document.getElementById('trace-list-container');
+    // 【【【修改的代码】】】 标题元素从 'trace-screen-title' 改为 'trace-modal-title'
+    const titleEl = document.getElementById('trace-modal-title');
+    const chat = state.chats[state.activeChatId];
+    listEl.innerHTML = '';
+
+    if (!chat || chat.isGroup) {
+        // 如果不在单聊界面，理论上不应该能点到这个按钮，但作为安全措施
+        titleEl.textContent = '今日轨迹';
+        listEl.innerHTML = '<p style="text-align:center; color: var(--text-secondary); padding: 50px 0;">请先进入一个单人聊天才能查看轨迹哦~</p>';
+        return;
+    }
+
+    // 更新标题并显示加载状态
+    titleEl.textContent = `“${chat.name}”的今日轨迹`;
+    listEl.innerHTML = '<p style="text-align:center; color: var(--text-secondary); padding: 50px 0;">轨迹生成中，请稍候...</p>';
+    
+    // 调用核心函数生成并显示轨迹
+    await generateCharacterTrace(chat.id);
+}
+
+/**
+ * 【核心】请求AI生成指定角色的今日轨迹
+ * @param {string} chatId - 目标角色的聊天ID
+ */
+async function generateCharacterTrace(chatId) {
+    const chat = state.chats[chatId];
+    if (!chat || chat.isGroup) return;
+
+    const { proxyUrl, apiKey, model } = state.apiConfig;
+    if (!proxyUrl || !apiKey || !model) {
+        displayTraceEntries(null, "API未配置，无法生成轨迹。");
+        return;
+    }
+    
+    // 1. 准备AI需要的所有上下文信息
+    const userNickname = state.qzoneSettings.nickname || '用户';
+    const recentHistorySummary = chat.history
+        .filter(m => !m.isHidden)
+        .slice(-15) // 获取最近15条消息作为参考
+        .map(msg => {
+            const sender = msg.role === 'user' ? userNickname : chat.name;
+            return `${sender}: ${String(msg.content).substring(0, 50)}...`;
+        })
+        .join('\n');
+    
+    // 2. 【最关键的一步】获取当前本地时间并格式化
+    const now = new Date();
+    const currentTimeString = now.toLocaleString('zh-CN', { hour12: false });
+
+    // 3. 构建一个极其严格和详细的AI指令 (Prompt)，与您要求的一致
+    const systemPrompt = `
+# 你的任务
+你是一个角色的“生活轨迹生成器”。你的任务是根据角色的设定和最近的聊天记录，虚构并生成这个角色从今天凌晨到现在为止的【15条】详细活动轨迹。
+
+# 角色设定
+${chat.settings.aiPersona}
+
+# 最近的聊天记录摘要 (供你参考)
+${recentHistorySummary}
+
+# 【【【时间铁律 (最高优先级！)】】】
+- 当前的真实时间是【${currentTimeString}】。
+- 你生成的所有活动记录的【时间点】，【绝对不能】晚于这个时间！
+- 时间应该从今天凌晨（00:00之后）开始，逐步推进到现在。
+- 时间分布要合理，符合正常人的作息规律。
+
+# 【【【数量铁律】】】
+- 你【必须】不多不少，正好生成【15条】活动轨迹。
+
+# 【【【格式铁律】】】
+- 你的回复【必须且只能】是一个标准的JSON数组。
+- 数组中的每一个元素都【必须】是一个包含三个字段的JSON对象:
+  1.  \`time\` (字符串): 活动发生的时间，格式为 "HH:mm" (例如: "08:15", "14:30")。
+  2.  \`location\` (字符串): 活动发生的地点。
+  3.  \`action\` (字符串): 对角色在该地点所做事情的生动、具体的描述。
+
+# 输出格式示例:
+\`\`\`json
+[
+  {
+    "time": "07:30",
+    "location": "公寓卧室",
+    "action": "被窗帘缝隙透进来的阳光叫醒，在床上伸了个懒腰。"
+  },
+  {
+    "time": "08:15",
+    "location": "公寓楼下的咖啡馆",
+    "action": "买了一杯热拿铁，坐在靠窗的位置看着街上的行人发呆。"
+  }
+]
+\`\`\`
+现在，请开始生成这15条轨迹。`;
+
+    try {
+        const messagesPayload = [{ role: 'user', content: "请根据我提供的超级指令，开始生成角色的今日轨迹。" }];
+        let isGemini = proxyUrl.includes('generativelanguage');
+        let geminiConfig = toGeminiRequestData(model, apiKey, systemPrompt, messagesPayload);
+
+        const response = isGemini 
+            ? await fetch(geminiConfig.url, geminiConfig.data) 
+            : await fetch(`${proxyUrl}/v1/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{ role: 'system', content: systemPrompt }, ...messagesPayload],
+                    temperature: 0.85, 
+                })
+            });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`API返回错误: ${errorData.error.message}`);
+        }
+        
+        const data = await response.json();
+        const aiResponseContent = getGeminiResponseText(data);
+        const traceArray = parseAiResponse(aiResponseContent);
+
+        if (!Array.isArray(traceArray) || traceArray.length === 0) {
+            throw new Error("AI未能返回有效的轨迹数组。");
+        }
+
+        displayTraceEntries(traceArray);
+
+    } catch (error) {
+        console.error("生成角色轨迹失败:", error);
+        displayTraceEntries(null, `轨迹生成失败: ${error.message}`);
+    }
+}
+
+/**
+ * 【渲染函数】将AI生成的轨迹数据显示在页面上
+ * @param {Array|null} entries - 包含轨迹对象的数组，或在失败时为null
+ * @param {string|null} errorMessage - 如果生成失败，则传入错误信息
+ */
+function displayTraceEntries(entries, errorMessage = null) {
+    const listEl = document.getElementById('trace-list-container');
+    listEl.innerHTML = '';
+
+    if (errorMessage) {
+        listEl.innerHTML = `<p style="text-align:center; color: #ff3b30; padding: 50px 0;">${errorMessage}</p>`;
+        return;
+    }
+
+    if (!entries || entries.length === 0) {
+        listEl.innerHTML = '<p style="text-align:center; color: var(--text-secondary); padding: 50px 0;">未能生成有效的轨迹信息。</p>';
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    entries.forEach(entry => {
+        if (entry.time && entry.location && entry.action) {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'trace-item';
+            itemEl.innerHTML = `
+                <div class="time">${entry.time}</div>
+                <div class="location">📍 ${entry.location}</div>
+                <div class="action">${entry.action}</div>
+            `;
+            fragment.appendChild(itemEl);
+        }
+    });
+    listEl.appendChild(fragment);
+}
+// ▲▲▲ 新增函数结束 ▲▲▲
+
+           
   window.toggleMemoryView = function(buttonOrTitleEl) {
     const card = buttonOrTitleEl.closest('.memory-card');
     if (!card) return;
@@ -21999,7 +22324,22 @@ function createMemoryCard(memory) {
         }
         
         // ▲▲▲ 替换结束 ▲▲▲
+
+                     // ▼▼▼ 【全新】“轨迹”功能事件绑定 (弹窗版修改) ▼▼▼
         
+                    // 1. 绑定聊天界面顶部的“轨迹”按钮 (这行不变)
+                    document.getElementById('open-trace-screen-btn').addEventListener('click', openTraceScreen);
+                    
+                    // 2. 【【【修改的代码】】】 绑定弹窗的“关闭”按钮
+                    document.getElementById('close-trace-modal-btn').addEventListener('click', () => {
+                        document.getElementById('trace-modal').classList.remove('visible');
+                    });
+
+                    // 3. 【【【修改的代码】】】 绑定弹窗的“刷新”按钮
+                    document.getElementById('refresh-trace-btn').addEventListener('click', renderTraceScreen);
+        
+                    // ▲▲▲ 新增代码结束 ▲▲▲
+           
         /**
          * 关闭伪浏览器，返回聊天界面
          * (这个函数现在由 init() 中的事件监听器调用)
@@ -29437,12 +29777,11 @@ document.getElementById('visual-sticker-upload-input').addEventListener('change'
         });
         
         // 8. 【全新】分类页签点击切换
-        document.getElementById('sticker-category-tabs').addEventListener('click', (e) => {
-            if (e.target.classList.contains('sticker-category-tab')) {
-                switchStickerCategory(e.target.dataset.categoryId);
-            }
-        });
-        // ▲▲▲ 新增/替换结束 ▲▲▲
+     document.getElementById('sticker-category-tabs-wrapper').addEventListener('click', (e) => {
+    if (e.target.classList.contains('sticker-category-tab')) {
+        switchStickerCategory(e.target.dataset.categoryId);
+    }
+});
                  
                     document.getElementById('sticker-upload-input').addEventListener('change', async (event) => { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = async () => { const base64Url = reader.result; const name = await showCustomPrompt("命名表情", "请为这个表情命名 (例如：好耶、疑惑)"); if (name && name.trim()) { const newSticker = { id: 'sticker_' + Date.now(), url: base64Url, name: name.trim(), isRecognized: true };; await db.userStickers.add(newSticker); state.userStickers.push(newSticker); renderStickerPanel(); } else if (name !== null) alert("表情名不能为空！"); }; event.target.value = null; });
         
@@ -32445,7 +32784,7 @@ window.addEventListener('resize', setAppHeight);
     <!-- ▲▲▲ 新HTML粘贴结束 ▲▲▲ -->
     <!-- ▼▼▼ 【全新】这是选择礼物接收人的弹窗，请粘贴到 body 底部 ▼▼▼ -->
     <div id="gift-recipient-modal" class="modal">
-        <div class="modal-content" style="height: 70%;">
+  
             <div class="modal-header">
                 <span>选择收礼人</span>
                 <label style="font-size: 14px; font-weight: normal; display: flex; align-items: center; gap: 5px;">
