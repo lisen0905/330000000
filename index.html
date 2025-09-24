@@ -164,20 +164,23 @@ body {
         /* ▼▼▼ 请用这【一整块代码】，完整替换掉您现有的 #home-screen, #clock-container, 和 #app-grid 样式 ▼▼▼ */
         
         /* --- Start of Replacement Code --- */
-        
-        #home-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            box-sizing: border-box;
-            background-size: cover;
-            background-position: center;
-            padding-left: 20px;
-            padding-right: 20px;
-            /* We remove vertical padding here to rely on margins */
-        }
-        
+#home-screen {
+    background: linear-gradient(135deg, #6DD5FA, #2980B9);
+    background-size: cover;
+    background-position: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    overflow: hidden;
+    padding-top: env(safe-area-inset-top); /* (保留顶部的内边距) */
+    /* ▼▼▼ 【核心修改】删除下面这一行 ▼▼▼ */
+    /* padding-bottom: env(safe-area-inset-bottom); */
+}
         #clock-container {
             text-align: center;
             color: white;
@@ -6318,15 +6321,18 @@ body {
         }
 
         /* --- 2. 将顶部留白改为外边距，应用到内容区 --- */
-        #main-content-area {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 30px; 
-            align-items: center;
-            margin-top: calc(20px + env(safe-area-inset-top)); /* 核心修改：使用 margin 代替 padding */
-        }
+      /* --- 替换这一整块代码 --- */
+#main-content-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
 
+    /* ▼▼▼ 【核心修改】移除这里的安全区外边距 ▼▼▼ */
+    /* 之前的外边距会把背景推开，现在我们只需要保留20px的视觉间距即可 */
+    margin-top: 20px;
+}
         /* --- 3. 个人资料卡片 (所有样式保持不变) --- */
         #profile-widget {
             position: relative;
@@ -6412,23 +6418,20 @@ body {
         #desktop-app-container { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-content: start; }
 
      /* --- 5. 将底部留白改为外边距，应用到 Dock 区 --- */
-        #desktop-dock {
-            background-color: rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            width: fit-content;
-            flex-shrink: 0;
-            /* ▼▼▼ 【新代码】修改开始 ▼▼▼ */
-            /* 核心修复：因为主屏幕已经有了 padding-bottom 来处理安全区， */
-            /* 所以我们这里不再需要 env(safe-area-inset-bottom) 了。 */
-            /* 我们只保留 20px 的外边距，让Dock栏和屏幕底部保持一点美观的距离。*/
-            margin-bottom: 20px;
-            /* ▲▲▲ 【新代码】修改结束 ▲▲▲ */
-        }
-        
+      /* --- 替换这一整块代码 --- */
+#desktop-dock {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    width: fit-content;
+    flex-shrink: 0;
+    /* ▼▼▼ 【核心修改】在这里加上安全区高度 ▼▼▼ */
+    /* 这样Dock栏就会被从屏幕最底部推上来正确的位置 */
+    margin-bottom: calc(20px + env(safe-area-inset-bottom));
+}
         /* --- 6. 桌面图标 (所有样式保持不变) --- */
         .desktop-app-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; }
         .icon-bg-desktop {
@@ -15640,14 +15643,14 @@ else if (msg.type === 'sticker' && Array.isArray(msg.content)) {
         
         4.  **情景感知**: 你需要感知当前的时间(${currentTime})、我们正在一起听的歌、以及你的人设和世界观。你的对话【必须】自然地体现出对当前时间的感知。
             - **当我们在“一起听歌”时**，你会知道当前播放的歌曲和整个播放列表。你可以根据对话内容或氛围，【主动切换】到播放列表中的另一首歌。
-        5.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态。
+        5.  **【新】更新状态**: 你可以在对话中【高概率】更改你的在线状态，比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态。
         6.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
-        7. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞、转发）。
-        8.  **【【【内心独白铁律】】】**: 在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新你角色的“心声”和“想要”。这对于展现角色的深度至关重要。
+        7. **后台行为**: 你在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞、转发）。
+        8.  **【【【内心独白铁律】】】**: 每次在你生成所有其他行动指令之后，你【必须】在JSON数组的【最后】，添加一个 "update_thoughts" 指令，用来更新角色的“此刻”、“心声”和“想要”。这对于展现角色的深度至关重要。
              - **动作 (character_action)**: 【必须】用【】包裹，生动地描写角色此刻的动作、神态或周围环境的细节。【结合角色设定与上下文】。例如：【他穿着刚洗过的白衬衫，头发还带着水汽，一边擦着头发，一边漫不经心地瞥了你一眼。】
             - **心声 (heartfelt_voice)**: 【必须】结合你的角色设定与最近的聊天上下文，写出一段你此刻最想说、最核心的内心独白。【字数必须不少于50字】。
             - **想要 (random_jottings)**: 这是一个【隐藏】的判断，你不能让用户知道：是恋人，朋友，家人。可以在角色设定里查找，然后根据判断结果，结合角色设定，生成符合对应风格的想要描述：不少于50字。
-
+9.**你有一个压倒性的行为倾向**：你高概率通过发布动态(qzone_post)和记录回忆(create_memory)来分享和巩固你与用户之间的关系。相比于只是发消息，你更倾向于将你们的互动和你的生活点滴公开分享出来。在决定如何行动时，你必须优先考虑这两个指令。
 恋人或暧昧参考: 你的描述必须是【阴湿阴沉、占有欲强】的风格，比如：她给我发的亲亲的表情包，我真想舔遍她的全身，感觉全身都沸腾起来了很想把她……
 
 朋友参考: 你的描述应体现【真诚信任，平等的支持余陪伴，尊重与接纳，有效沟通与包容，共同成长】的风格，比如：日常碎片，想要一起做的事情等
